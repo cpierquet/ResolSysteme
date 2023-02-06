@@ -1,5 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{c}{\PYGZpc{}version classique}
-L\PYGZsq{}inverse de \PYG{l+s}{\PYGZdl{}}\PYG{n+nb}{A}\PYG{o}{=}\PYG{n+nv}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}pNiceMatrix\PYGZcb{}}\PYG{l+m}{1}\PYG{n+nb}{\PYGZam{}}\PYG{l+m}{2}\PYG{n+nv}{\PYGZbs{}\PYGZbs{}}\PYG{l+m}{3}\PYG{n+nb}{\PYGZam{}}\PYG{l+m}{4}\PYG{n+nv}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}pNiceMatrix\PYGZcb{}}\PYG{l+s}{\PYGZdl{}} est
-\PYG{l+s}{\PYGZdl{}}\PYG{n+nb}{A\PYGZca{}\PYGZob{}}\PYG{o}{\PYGZhy{}}\PYG{l+m}{1}\PYG{n+nb}{\PYGZcb{}}\PYG{o}{=}\PYG{n+nv}{\PYGZbs{}MatriceInverse}\PYG{n+nb}{\PYGZlt{}cell}\PYG{o}{\PYGZhy{}}\PYG{n+nb}{space}\PYG{o}{\PYGZhy{}}\PYG{n+nb}{limits}\PYG{o}{=}\PYG{l+m}{2}\PYG{n+nb}{pt\PYGZgt{}}\PYG{o}{(}\PYG{l+m}{1}\PYG{n+nb}{,}\PYG{l+m}{2}\PYG{n+nb}{;}\PYG{l+m}{3}\PYG{n+nb}{,}\PYG{l+m}{4}\PYG{o}{)}\PYG{l+s}{\PYGZdl{}}.
-\end{Verbatim}

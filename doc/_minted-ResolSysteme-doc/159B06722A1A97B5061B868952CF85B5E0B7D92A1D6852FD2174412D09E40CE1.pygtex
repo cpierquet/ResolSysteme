@@ -1,7 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{c}{\PYGZpc{}version classique}
-\PYG{k}{\PYGZbs{}DetMatrice}(*)[option de formatage](matrice)
-
-\PYG{c}{\PYGZpc{}version lua}
-\PYG{k}{\PYGZbs{}DetMatriceLUA}(*)[option de formatage](matrice)
-\end{Verbatim}

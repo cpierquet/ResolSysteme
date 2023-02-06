@@ -1,5 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{c}{\PYGZpc{}chargement du package pyluatex et du package avec [lua]}
-\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[options]}\PYG{n+nb}{\PYGZob{}}pyluatex\PYG{n+nb}{\PYGZcb{}}
-\PYG{k}{\PYGZbs{}usepackage}\PYG{n+na}{[lua]}\PYG{n+nb}{\PYGZob{}}ResolSystemes\PYG{n+nb}{\PYGZcb{}}
-\end{Verbatim}

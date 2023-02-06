@@ -1,0 +1,753 @@
+% Author.........: C. Pierquet
+% licence........: Released under the LaTeX Project Public License v1.3c or later, see http://www.latex-project.org/lppl.txtf
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{ResolSysteme}[2023/02/06 v0.1.0 Travailler sur un systeme lineaire avec xint ou lua]
+% 0.1.0		Version initiale
+
+%------Option(s)
+\newif\if@lua \@luafalse
+\DeclareOption{lua}{\@luatrue}
+\DeclareOption*{}
+\ProcessOptions\relax
+
+%------Packages utiles
+\RequirePackage{nicematrix}
+\RequirePackage{ifthen}
+\RequirePackage{xintexpr}
+\RequirePackage{xinttools}
+\RequirePackage{listofitems}
+\RequirePackage{siunitx}
+\RequirePackage{nicefrac}
+\RequirePackage{xstring}
+
+%-------Option lua pour les scripts python !
+\if@lua %package pyluatex à charger par l'utilisateur !
+\begin{python}
+from sympy import *
+x = Symbol('x')
+y = Symbol('y')
+z = Symbol('z')
+t = Symbol('t')
+
+def resol_systeme_QQ(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,u) :
+	solution=solve([a*x+b*y+c*z+d*t-e,f*x+g*y+h*z+i*t-j,k*x+l*y+m*z+n*t-o,p*x+q*y+r*z+s*t-u],[x,y,z,t])
+	return solution
+
+def resol_systeme_TT(a,b,c,d,e,f,g,h,i,j,k,l) :
+	solution=solve([a*x+b*y+c*z-d,e*x+f*y+g*z-h,i*x+j*y+k*z-l],[x,y,z])
+	return solution
+
+def resol_systeme_DD(a,b,c,d,e,f) :
+	solution=solve([a*x+b*y-c,d*x+e*y-f],[x,y])
+	return solution
+
+def det_matrice_QQ(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p) :
+	MatTmp = Matrix(([a,b,c,d],[e,f,g,h],[i,j,k,l],[m,n,o,p]))
+	DetMatTmp = MatTmp.det()
+	return DetMatTmp
+
+def det_matrice_TT(a,b,c,d,e,f,g,h,i) :
+	MatTmp = Matrix(([a,b,c],[d,e,f],[g,h,i]))
+	DetMatTmp = MatTmp.det()
+	return DetMatTmp
+
+def det_matrice_DD(a,b,c,d) :
+	MatTmp = Matrix(([a,b],[c,d]))
+	DetMatTmp = MatTmp.det()
+	return DetMatTmp
+
+def inverse_matrice_QQ(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p) :
+	MatTmp = Matrix(([a,b,c,d],[e,f,g,h],[i,j,k,l],[m,n,o,p]))
+	DetMatTmp = MatTmp.inv()
+	return DetMatTmp
+
+def inverse_matrice_DD(a,b,c,d) :
+	MatTmp = Matrix(([a,b],[c,d]))
+	InvMatTmp = MatTmp.inv()
+	return InvMatTmp
+
+def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
+	MatTmp = Matrix(([a,b,c],[d,e,f],[g,h,i]))
+	InvMatTmp = MatTmp.inv()
+	return InvMatTmp
+
+\end{python}
+\fi
+
+%------conversion en fraction, version interne !
+\NewDocumentCommand\ConvVersFrac{ s O{} m }{%
+	%*=moins devant
+	%2=argument.optionnel[d/t/dec=...]
+	%3=argument mandataire {calcul ou fraction}
+	\def\calculargument{\xintPRaw{\xintIrr{\xinteval{#3}}}}%on calcule et on transforme en A/B
+	\IfSubStr{\calculargument}{/}%on teste si le symbole / apparaît
+	{%si oui := fraction
+		\StrBefore{\calculargument}{/}[\numerateur]%on extrait le numérateur
+		\StrBehind{\calculargument}{/}[\denominateur]%on extrait le dénominateur
+		\ifblank{#2}%
+		{%
+			\IfBooleanTF{#1}%
+			{%
+				\ifthenelse{\numerateur < 0}%
+				{\ensuremath{-\frac{\num{\fpeval{abs(\numerateur)}}}{\num{\denominateur}}}}%
+				{\ensuremath{\frac{\num{\numerateur}}{\num{\denominateur}}}}%
+			}%
+			{\ensuremath{\frac{\num{\numerateur}}{\num{\denominateur}}}}%
+		}%
+		{}%si l'argument optionnel est vide
+		\IfStrEq{#2}{d}%
+		{%
+			\IfBooleanTF{#1}%
+			{%
+				\ifthenelse{\numerateur < 0}%
+				{\ensuremath{-\dfrac{\num{\fpeval{abs(\numerateur)}}}{\num{\denominateur}}}}%
+				{\ensuremath{\dfrac{\num{\numerateur}}{\num{\denominateur}}}}%
+			}%
+			{\ensuremath{\dfrac{\num{\numerateur}}{\num{\denominateur}}}}%
+		}%
+		{}%si l'argument optionnel est vide
+		\IfStrEq{#2}{t}%
+		{%
+			\IfBooleanTF{#1}%
+			{%
+				\ifthenelse{\numerateur < 0}%
+				{\ensuremath{-\tfrac{\num{\fpeval{abs(\numerateur)}}}{\num{\denominateur}}}}%
+				{\ensuremath{\tfrac{\num{\numerateur}}{\num{\denominateur}}}}%
+			}%
+			{\ensuremath{\tfrac{\num{\numerateur}}{\num{\denominateur}}}}%
+		}%
+		{}%si l'argument optionnel est vide
+		\IfStrEq{#2}{n}%
+		{%
+			\IfBooleanTF{#1}%
+			{%
+				\ifthenelse{\numerateur < 0}%
+				{\ensuremath{-\nicefrac{\num{\fpeval{abs(\numerateur)}}}{\num{\denominateur}}}}%
+				{\ensuremath{\nicefrac{\num{\numerateur}}{\num{\denominateur}}}}%
+			}%
+			{\ensuremath{\nicefrac{\num{\numerateur}}{\num{\denominateur}}}}%
+		}%
+		{}%si l'argument optionnel est vide
+		\IfSubStr{#2}{dec}%on veut la forme décimale
+		{%
+			\IfSubStr{#2}{=}%si on rajoute une précision
+				{%
+					\StrBehind{#2}{=}[\precdecimal]%
+					\ensuremath{\num{\xintfloateval{round(#3,\precdecimal)}}}%
+				}%
+				{%
+					\ensuremath{\num{\xintfloateval{#3}}}%
+				}%
+		}%
+		{}%si l'argument optionnel est vide
+	}{%si non := entier
+		\num{\calculargument}%on affiche l'entier, avec le package siunitx
+	}%
+}
+
+%------Commande classique, 2x2 ou 3x3
+\NewDocumentCommand\MatriceInverse{ s O{} D<>{} r() }{%
+	%*=fractions avec - devant
+	%2=options conversion
+	%3=options nicematrix
+	%4=matrice (,,;,,)
+	%---------------------
+	%lectures des matrices
+	\setsepchar{;/,}
+	\readlist*\MAMATRICEA{#4}
+	\def\MatDim{\MAMATRICEAlen}%
+	%les coeffs de A et le déterminant et les coeff de l'inverse
+	\ifnum \MAMATRICEAlen=3
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[1,3]\MatC%
+		\itemtomacro\MAMATRICEA[2,1]\MatD%
+		\itemtomacro\MAMATRICEA[2,2]\MatE%
+		\itemtomacro\MAMATRICEA[2,3]\MatF%
+		\itemtomacro\MAMATRICEA[3,1]\MatG%
+		\itemtomacro\MAMATRICEA[3,2]\MatH%
+		\itemtomacro\MAMATRICEA[3,3]\MatI%
+		%le déterminant
+		\def\DETMATRICE{\xinteval{\MatA*\MatE*\MatI+\MatD*\MatH*\MatC+\MatB*\MatF*\MatG-\MatG*\MatE*\MatC-\MatD*\MatB*\MatI-\MatA*\MatH*\MatF}}%
+		%matrice inverse, si elle existe...
+		\xintifboolexpr{\DETMATRICE == 0}%
+			{\text{Matrice non inversible}}%
+			{%
+				\IfBooleanTF{#1}%
+					{%
+						\def\MatInvA{\ConvVersFrac*[#2]{(\MatE*\MatI-\MatH*\MatF)/\DETMATRICE}}%
+						\def\MatInvB{\ConvVersFrac*[#2]{(-\MatB*\MatI+\MatC*\MatH)/\DETMATRICE}}%
+						\def\MatInvC{\ConvVersFrac*[#2]{(\MatB*\MatF-\MatC*\MatE)/\DETMATRICE}}%
+						\def\MatInvD{\ConvVersFrac*[#2]{(-\MatD*\MatI+\MatF*\MatG)/\DETMATRICE}}%
+						\def\MatInvE{\ConvVersFrac*[#2]{(\MatA*\MatI-\MatC*\MatG)/\DETMATRICE}}%
+						\def\MatInvF{\ConvVersFrac*[#2]{(-\MatA*\MatF+\MatD*\MatC)/\DETMATRICE}}%
+						\def\MatInvG{\ConvVersFrac*[#2]{(\MatD*\MatH-\MatE*\MatG)/\DETMATRICE}}%
+						\def\MatInvH{\ConvVersFrac*[#2]{(-\MatA*\MatH+\MatB*\MatG)/\DETMATRICE}}%
+						\def\MatInvI{\ConvVersFrac*[#2]{(\MatA*\MatE-\MatB*\MatD)/\DETMATRICE}}%
+					}%
+					{%
+						\def\MatInvA{\ConvVersFrac[#2]{(\MatE*\MatI-\MatH*\MatF)/\DETMATRICE}}%
+						\def\MatInvB{\ConvVersFrac[#2]{(-\MatB*\MatI+\MatC*\MatH)/\DETMATRICE}}%
+						\def\MatInvC{\ConvVersFrac[#2]{(\MatB*\MatF-\MatC*\MatE)/\DETMATRICE}}%
+						\def\MatInvD{\ConvVersFrac[#2]{(-\MatD*\MatI+\MatF*\MatG)/\DETMATRICE}}%
+						\def\MatInvE{\ConvVersFrac[#2]{(\MatA*\MatI-\MatC*\MatG)/\DETMATRICE}}%
+						\def\MatInvF{\ConvVersFrac[#2]{(-\MatA*\MatF+\MatD*\MatC)/\DETMATRICE}}%
+						\def\MatInvG{\ConvVersFrac[#2]{(\MatD*\MatH-\MatE*\MatG)/\DETMATRICE}}%
+						\def\MatInvH{\ConvVersFrac[#2]{(-\MatA*\MatH+\MatB*\MatG)/\DETMATRICE}}%
+						\def\MatInvI{\ConvVersFrac[#2]{(\MatA*\MatE-\MatB*\MatD)/\DETMATRICE}}%
+					}%
+				\begin{pNiceMatrix}[#3]
+					{\MatInvA}&{\MatInvB}&{\MatInvC} \\
+					{\MatInvD}&{\MatInvE}&{\MatInvF} \\
+					{\MatInvG}&{\MatInvH}&{\MatInvI}
+				\end{pNiceMatrix}%
+			}%
+	\fi
+	\ifnum \MAMATRICEAlen=2
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[2,1]\MatC%
+		\itemtomacro\MAMATRICEA[2,2]\MatD%
+		%le déterminant
+		\def\DETMATRICE{\xinteval{\MatA*\MatD-\MatB*\MatC}}%
+		%matrice inverse, si elle existe...
+		\xintifboolexpr{\DETMATRICE == 0}%
+			{\text{Matrice non inversible}}%
+			{%
+				\IfBooleanTF{#1}%
+				{%
+					\def\MatInvA{\ConvVersFrac*[#2]{(\MatD)/\DETMATRICE}}%
+					\def\MatInvB{\ConvVersFrac*[#2]{(-\MatB)/\DETMATRICE}}%
+					\def\MatInvC{\ConvVersFrac*[#2]{(-\MatC)/\DETMATRICE}}%
+					\def\MatInvD{\ConvVersFrac*[#2]{(\MatA)/\DETMATRICE}}%
+				}%
+				{%
+					\def\MatInvA{\ConvVersFrac[#2]{(\MatD)/\DETMATRICE}}%
+					\def\MatInvB{\ConvVersFrac[#2]{(-\MatB)/\DETMATRICE}}%
+					\def\MatInvC{\ConvVersFrac[#2]{(-\MatC)/\DETMATRICE}}%
+					\def\MatInvD{\ConvVersFrac[#2]{(\MatA)/\DETMATRICE}}%
+				}%
+				\begin{pNiceMatrix}[#3]
+					{\MatInvA}&{\MatInvB} \\
+					{\MatInvC}&{\MatInvD}
+				\end{pNiceMatrix}%
+			}%
+	\fi
+}
+
+\NewDocumentCommand\DetMatrice{ s O{} r() }{%
+	%*=fractions avec - devant
+	%2=options conversion
+	%3=matrice (,,;,,)
+	%---------------------
+	%lectures des matrices
+	\setsepchar{;/,}
+	\readlist*\MAMATRICEA{#3}
+	\def\MatDim{\MAMATRICEAlen}%
+	%les coeffs de A et le déterminant et les coeff de l'inverse
+	\ifnum \MAMATRICEAlen=3
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[1,3]\MatC%
+		\itemtomacro\MAMATRICEA[2,1]\MatD%
+		\itemtomacro\MAMATRICEA[2,2]\MatE%
+		\itemtomacro\MAMATRICEA[2,3]\MatF%
+		\itemtomacro\MAMATRICEA[3,1]\MatG%
+		\itemtomacro\MAMATRICEA[3,2]\MatH%
+		\itemtomacro\MAMATRICEA[3,3]\MatI%
+		%le déterminant
+		\def\DETMATRICE{\xinteval{\MatA*\MatE*\MatI+\MatD*\MatH*\MatC+\MatB*\MatF*\MatG-\MatG*\MatE*\MatC-\MatD*\MatB*\MatI-\MatA*\MatH*\MatF}}%
+	\fi
+	\ifnum \MAMATRICEAlen=2
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[2,1]\MatC%
+		\itemtomacro\MAMATRICEA[2,2]\MatD%
+		%le déterminant
+		\def\DETMATRICE{\xinteval{\MatA*\MatD-\MatB*\MatC}}%
+	\fi
+	\IfBooleanTF{#1}%
+		{%
+			\ConvVersFrac*[#2]{\DETMATRICE}%
+		}%
+		{%
+			\ConvVersFrac[#2]{\DETMATRICE}%
+		}%
+}
+
+\NewDocumentCommand\SolutionSysteme{ s O{} D<>{} r() r() O{} }{%
+	%*=fractions avec - devant
+	%2=options conversion
+	%3=options nicematrix
+	%4=matrice (,,;,,) principale
+	%5=matrice (;;) second membre
+	%6=résultat sous forme d'une matrice
+	%---------------------
+	%lectures des matrices
+	\setsepchar{;/,}%
+	\readlist*\MAMATRICEA{#4}%
+	\setsepchar{,}%
+	\readlist*\MAMATRICEB{#5}%
+	\def\MatDim{\MAMATRICEAlen}%
+	%les coeffs de A et le déterminant et les coeff de l'inverse
+	\ifnum \MAMATRICEAlen=3
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[1,3]\MatC%
+		\itemtomacro\MAMATRICEA[2,1]\MatD%
+		\itemtomacro\MAMATRICEA[2,2]\MatE%
+		\itemtomacro\MAMATRICEA[2,3]\MatF%
+		\itemtomacro\MAMATRICEA[3,1]\MatG%
+		\itemtomacro\MAMATRICEA[3,2]\MatH%
+		\itemtomacro\MAMATRICEA[3,3]\MatI%
+		%le déterminant
+		\def\DETMATRICE{\xinteval{\MatA*\MatE*\MatI+\MatD*\MatH*\MatC+\MatB*\MatF*\MatG-\MatG*\MatE*\MatC-\MatD*\MatB*\MatI-\MatA*\MatH*\MatF}}%
+		%les coeffs de B
+		\itemtomacro\MAMATRICEB[1]\MatBA%
+		\itemtomacro\MAMATRICEB[2]\MatBB%
+		\itemtomacro\MAMATRICEB[3]\MatBC%
+		%matrice inverse, si elle existe...
+		\xintifboolexpr{\DETMATRICE == 0}%
+			{\text{Matrice non inversible}}%
+			{%
+				\def\MatInvA{(\MatE*\MatI-\MatH*\MatF)/\DETMATRICE}%
+				\def\MatInvB{(-\MatB*\MatI+\MatC*\MatH)/\DETMATRICE}%
+				\def\MatInvC{(\MatB*\MatF-\MatC*\MatE)/\DETMATRICE}%
+				\def\MatInvD{(-\MatD*\MatI+\MatF*\MatG)/\DETMATRICE}%
+				\def\MatInvE{(\MatA*\MatI-\MatC*\MatG)/\DETMATRICE}%
+				\def\MatInvF{(-\MatA*\MatF+\MatD*\MatC)/\DETMATRICE}%
+				\def\MatInvG{(\MatD*\MatH-\MatE*\MatG)/\DETMATRICE}%
+				\def\MatInvH{(-\MatA*\MatH+\MatB*\MatG)/\DETMATRICE}%
+				\def\MatInvI{(\MatA*\MatE-\MatB*\MatD)/\DETMATRICE}%
+				%
+				\IfBooleanTF{#1}%version étoilée := moinsdevant
+					{%
+						\def\MatResA{\ConvVersFrac*[#2]{\MatInvA*\MatBA+\MatInvB*\MatBB+\MatInvC*\MatBC}}%
+						\def\MatResB{\ConvVersFrac*[#2]{\MatInvD*\MatBA+\MatInvE*\MatBB+\MatInvF*\MatBC}}%
+						\def\MatResC{\ConvVersFrac*[#2]{\MatInvG*\MatBA+\MatInvH*\MatBB+\MatInvI*\MatBC}}%
+					}%
+					{%
+						\def\MatResA{\ConvVersFrac[#2]{\MatInvA*\MatBA+\MatInvB*\MatBB+\MatInvC*\MatBC}}%
+						\def\MatResB{\ConvVersFrac[#2]{\MatInvD*\MatBA+\MatInvE*\MatBB+\MatInvF*\MatBC}}%
+						\def\MatResC{\ConvVersFrac[#2]{\MatInvG*\MatBA+\MatInvH*\MatBB+\MatInvI*\MatBC}}%
+					}%
+				\IfStrEq{#6}{Matrice}%si matrice
+					{%
+						\begin{pNiceMatrix}[#3]
+							{\MatResA} \\
+							{\MatResB} \\
+							{\MatResC}
+						\end{pNiceMatrix}%
+					}%
+					{%
+						\left( {\MatResA} ; {\MatResB} ; {\MatResC} \right)%
+					}%
+			}%
+	\fi
+	\ifnum \MAMATRICEAlen=2
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[2,1]\MatC%
+		\itemtomacro\MAMATRICEA[2,2]\MatD%
+		%le déterminant
+		\def\DETMATRICE{\xinteval{\MatA*\MatD-\MatB*\MatC}}%
+		%les coeffs de B
+		\itemtomacro\MAMATRICEB[1]\MatBA%
+		\itemtomacro\MAMATRICEB[2]\MatBB%
+		%matrice inverse, si elle existe...
+		\xintifboolexpr{\DETMATRICE == 0}%
+			{\text{Matrice non inversible}}%
+			{%
+				\def\MatInvA{(\MatD)/\DETMATRICE}%
+				\def\MatInvB{(-\MatB)/\DETMATRICE}%
+				\def\MatInvC{(-\MatC)/\DETMATRICE}%
+				\def\MatInvD{(\MatA)/\DETMATRICE}%
+				%
+				\IfBooleanTF{#1}%
+					{%
+						\def\MatResA{\ConvVersFrac*[#2]{\MatInvA*\MatBA+\MatInvB*\MatBB}}%
+						\def\MatResB{\ConvVersFrac*[#2]{\MatInvC*\MatBA+\MatInvD*\MatBB}}%
+					}%
+					{%
+						\def\MatResA{\ConvVersFrac[#2]{\MatInvA*\MatBA+\MatInvB*\MatBB}}%
+						\def\MatResB{\ConvVersFrac[#2]{\MatInvC*\MatBA+\MatInvD*\MatBB}}%
+					}%
+				\IfStrEq{#6}{Matrice}%si matrice
+					{%
+						\begin{pNiceMatrix}[#3]
+							{\MatResA} \\
+							{\MatResB}
+						\end{pNiceMatrix}%
+					}%
+					{%
+						\left( {\MatResA} ; {\MatResB} \right)%
+					}%
+			}%
+	\fi
+}
+
+%------Commandes via pyluatex
+\if@lua %package pyluatex à charger par l'utilisateur !
+\NewDocumentCommand\SolutionSystemeLUA{ s O{} D<>{} r() r() O{} }{%
+	%*=avec le moins devant
+	%2=Option Fraction
+	%3=matrice du système
+	%4=second membre
+	%5=option NiceMatrix
+	%6=résultat sous forme d'une matrice
+	%lectures des matrices
+	\setsepchar{;/,}%
+	\readlist*\MAMATRICEA{#4}%
+	\setsepchar{,}%
+	\readlist*\MAMATRICEB{#5}%
+	\def\MatDim{\MAMATRICEAlen}%
+	%système QuatreQuatre
+	\ifnum \MAMATRICEAlen=4
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[1,3]\MatC%
+		\itemtomacro\MAMATRICEA[1,4]\MatD%
+		\itemtomacro\MAMATRICEA[2,1]\MatE%
+		\itemtomacro\MAMATRICEA[2,2]\MatF%
+		\itemtomacro\MAMATRICEA[2,3]\MatG%
+		\itemtomacro\MAMATRICEA[2,4]\MatH%
+		\itemtomacro\MAMATRICEA[3,1]\MatI%
+		\itemtomacro\MAMATRICEA[3,2]\MatJ%
+		\itemtomacro\MAMATRICEA[3,3]\MatK%
+		\itemtomacro\MAMATRICEA[3,4]\MatL%
+		\itemtomacro\MAMATRICEA[4,1]\MatM%
+		\itemtomacro\MAMATRICEA[4,2]\MatN%
+		\itemtomacro\MAMATRICEA[4,3]\MatO%
+		\itemtomacro\MAMATRICEA[4,4]\MatP%
+		%les coeffs de B
+		\itemtomacro\MAMATRICEB[1]\MatBA%
+		\itemtomacro\MAMATRICEB[2]\MatBB%
+		\itemtomacro\MAMATRICEB[3]\MatBC%
+		\itemtomacro\MAMATRICEB[4]\MatBD%
+		%les solutions
+		\def\DETMATRICE{\xinteval{\py{det_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)}}}%
+		\xintifboolexpr{\DETMATRICE == 0}%
+			{\text{Matrice non inversible}}%
+			{%
+			\IfBooleanTF{#1}%
+				{
+					\def\MatResA{\ConvVersFrac*[#2]{\py{resol_systeme_QQ(\MatA,\MatB,\MatC,\MatD,\MatBA,\MatE,\MatF,\MatG,\MatH,\MatBB,\MatI,\MatJ,\MatK,\MatL,\MatBC,\MatM,\MatN,\MatO,\MatP,\MatBD)[x]}}}%
+					\def\MatResB{\ConvVersFrac*[#2]{\py{resol_systeme_QQ(\MatA,\MatB,\MatC,\MatD,\MatBA,\MatE,\MatF,\MatG,\MatH,\MatBB,\MatI,\MatJ,\MatK,\MatL,\MatBC,\MatM,\MatN,\MatO,\MatP,\MatBD)[y]}}}%
+					\def\MatResC{\ConvVersFrac*[#2]{\py{resol_systeme_QQ(\MatA,\MatB,\MatC,\MatD,\MatBA,\MatE,\MatF,\MatG,\MatH,\MatBB,\MatI,\MatJ,\MatK,\MatL,\MatBC,\MatM,\MatN,\MatO,\MatP,\MatBD)[z]}}}%
+					\def\MatResD{\ConvVersFrac*[#2]{\py{resol_systeme_QQ(\MatA,\MatB,\MatC,\MatD,\MatBA,\MatE,\MatF,\MatG,\MatH,\MatBB,\MatI,\MatJ,\MatK,\MatL,\MatBC,\MatM,\MatN,\MatO,\MatP,\MatBD)[t]}}}%
+				}%
+				{%
+					\def\MatResA{\ConvVersFrac[#2]{\py{resol_systeme_QQ(\MatA,\MatB,\MatC,\MatD,\MatBA,\MatE,\MatF,\MatG,\MatH,\MatBB,\MatI,\MatJ,\MatK,\MatL,\MatBC,\MatM,\MatN,\MatO,\MatP,\MatBD)[x]}}}%
+					\def\MatResB{\ConvVersFrac[#2]{\py{resol_systeme_QQ(\MatA,\MatB,\MatC,\MatD,\MatBA,\MatE,\MatF,\MatG,\MatH,\MatBB,\MatI,\MatJ,\MatK,\MatL,\MatBC,\MatM,\MatN,\MatO,\MatP,\MatBD)[y]}}}%
+					\def\MatResC{\ConvVersFrac[#2]{\py{resol_systeme_QQ(\MatA,\MatB,\MatC,\MatD,\MatBA,\MatE,\MatF,\MatG,\MatH,\MatBB,\MatI,\MatJ,\MatK,\MatL,\MatBC,\MatM,\MatN,\MatO,\MatP,\MatBD)[z]}}}%
+					\def\MatResD{\ConvVersFrac[#2]{\py{resol_systeme_QQ(\MatA,\MatB,\MatC,\MatD,\MatBA,\MatE,\MatF,\MatG,\MatH,\MatBB,\MatI,\MatJ,\MatK,\MatL,\MatBC,\MatM,\MatN,\MatO,\MatP,\MatBD)[t]}}}%
+				}%
+				\IfStrEq{#6}{Matrice}%si matrice
+				{%
+					\begin{pNiceMatrix}[#3]
+						{\MatResA} \\
+						{\MatResB} \\
+						{\MatResC} \\
+						{\MatResD}
+					\end{pNiceMatrix}%
+				}%
+				{%
+					\left( {\MatResA} ; {\MatResB} ; {\MatResC} ; {\MatResD} \right)%
+				}%
+			}%
+	\fi
+	%système TroisTrois
+	\ifnum \MAMATRICEAlen=3
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[1,3]\MatC%
+		\itemtomacro\MAMATRICEA[2,1]\MatD%
+		\itemtomacro\MAMATRICEA[2,2]\MatE%
+		\itemtomacro\MAMATRICEA[2,3]\MatF%
+		\itemtomacro\MAMATRICEA[3,1]\MatG%
+		\itemtomacro\MAMATRICEA[3,2]\MatH%
+		\itemtomacro\MAMATRICEA[3,3]\MatI%
+		%les coeffs de B
+		\itemtomacro\MAMATRICEB[1]\MatBA%
+		\itemtomacro\MAMATRICEB[2]\MatBB%
+		\itemtomacro\MAMATRICEB[3]\MatBC%
+		%les solutions
+		\def\DETMATRICE{\xinteval{\py{det_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)}}}%
+		\xintifboolexpr{\DETMATRICE == 0}%
+			{\text{Matrice non inversible}}%
+			{%
+				\IfBooleanTF{#1}%
+					{
+						\def\MatResA{\ConvVersFrac*[#2]{\py{resol_systeme_TT(\MatA,\MatB,\MatC,\MatBA,\MatD,\MatE,\MatF,\MatBB,\MatG,\MatH,\MatI,\MatBC)[x]}}}%
+						\def\MatResB{\ConvVersFrac*[#2]{\py{resol_systeme_TT(\MatA,\MatB,\MatC,\MatBA,\MatD,\MatE,\MatF,\MatBB,\MatG,\MatH,\MatI,\MatBC)[y]}}}%
+						\def\MatResC{\ConvVersFrac*[#2]{\py{resol_systeme_TT(\MatA,\MatB,\MatC,\MatBA,\MatD,\MatE,\MatF,\MatBB,\MatG,\MatH,\MatI,\MatBC)[z]}}}%
+					}%
+					{%
+						\def\MatResA{\ConvVersFrac[#2]{\py{resol_systeme_TT(\MatA,\MatB,\MatC,\MatBA,\MatD,\MatE,\MatF,\MatBB,\MatG,\MatH,\MatI,\MatBC)[x]}}}%
+						\def\MatResB{\ConvVersFrac[#2]{\py{resol_systeme_TT(\MatA,\MatB,\MatC,\MatBA,\MatD,\MatE,\MatF,\MatBB,\MatG,\MatH,\MatI,\MatBC)[y]}}}%
+						\def\MatResC{\ConvVersFrac[#2]{\py{resol_systeme_TT(\MatA,\MatB,\MatC,\MatBA,\MatD,\MatE,\MatF,\MatBB,\MatG,\MatH,\MatI,\MatBC)[z]}}}%
+					}%
+				\IfStrEq{#6}{Matrice}%si matrice
+					{%
+						\begin{pNiceMatrix}[#3]
+							{\MatResA} \\
+							{\MatResB} \\
+							{\MatResC}
+						\end{pNiceMatrix}%
+					}%
+					{%
+						\left( {\MatResA} ; {\MatResB} ; {\MatResC} \right)%
+					}%
+			}%
+	\fi
+	%système DeuxDeux
+	\ifnum \MAMATRICEAlen=2
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[2,1]\MatC%
+		\itemtomacro\MAMATRICEA[2,2]\MatD%
+		%les coeffs de B
+		\itemtomacro\MAMATRICEB[1]\MatBA%
+		\itemtomacro\MAMATRICEB[2]\MatBB%
+		%solutions
+		\def\DETMATRICE{\xinteval{\py{det_matrice_DD(\MatA,\MatB,\MatC,\MatD)}}}%
+		\xintifboolexpr{\DETMATRICE == 0}%
+			{\text{Matrice non inversible}}%
+			{%
+				\IfBooleanTF{#1}%
+				{
+					\def\MatResA{\ConvVersFrac*[#2]{\py{resol_systeme_DD(\MatA,\MatB,\MatBA,\MatC,\MatD,\MatBB)[x]}}}%
+					\def\MatResB{\ConvVersFrac*[#2]{\py{resol_systeme_DD(\MatA,\MatB,\MatBA,\MatC,\MatD,\MatBB)[y]}}}%
+				}%
+				{%
+					\def\MatResA{\ConvVersFrac[#2]{\py{resol_systeme_DD(\MatA,\MatB,\MatBA,\MatC,\MatD,\MatBB)[x]}}}%
+					\def\MatResB{\ConvVersFrac[#2]{\py{resol_systeme_DD(\MatA,\MatB,\MatBA,\MatC,\MatD,\MatBB)[y]}}}%
+				}%
+				\IfStrEq{#6}{Matrice}%si matrice
+					{%
+						\begin{pNiceMatrix}[#3]
+							{\MatResA} \\
+							{\MatResB}
+						\end{pNiceMatrix}%
+					}%
+					{%
+						\left( {\MatResA} ; {\MatResB} \right)%
+					}%
+			}%
+	\fi
+}
+
+\NewDocumentCommand\MatriceInverseLUA{ s O{} D<>{} r() }{%
+	%*=fractions avec - devant
+	%2=options conversion
+	%3=options nicematrix
+	%4=matrice (,,;,,)
+	%---------------------
+	%lectures des matrices
+	\setsepchar{;/,}%
+	\readlist*\MAMATRICEA{#4}%
+	\def\MatDim{\MAMATRICEAlen}%
+	%les coeffs de A et le déterminant et les coeff de l'inverse
+	\ifnum \MAMATRICEAlen=4
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[1,3]\MatC%
+		\itemtomacro\MAMATRICEA[1,4]\MatD%
+		\itemtomacro\MAMATRICEA[2,1]\MatE%
+		\itemtomacro\MAMATRICEA[2,2]\MatF%
+		\itemtomacro\MAMATRICEA[2,3]\MatG%
+		\itemtomacro\MAMATRICEA[2,4]\MatH%
+		\itemtomacro\MAMATRICEA[3,1]\MatI%
+		\itemtomacro\MAMATRICEA[3,2]\MatJ%
+		\itemtomacro\MAMATRICEA[3,3]\MatK%
+		\itemtomacro\MAMATRICEA[3,4]\MatL%
+		\itemtomacro\MAMATRICEA[4,1]\MatM%
+		\itemtomacro\MAMATRICEA[4,2]\MatN%
+		\itemtomacro\MAMATRICEA[4,3]\MatO%
+		\itemtomacro\MAMATRICEA[4,4]\MatP%
+		%les solutions
+		\def\DETMATRICE{\xinteval{\py{det_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)}}}%
+		\xintifboolexpr{\DETMATRICE == 0}%
+			{\text{Matrice non inversible}}%
+			{%
+			\IfBooleanTF{#1}%
+			{
+				\def\MatInvA{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[0]}}}%
+				\def\MatInvB{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[1]}}}%
+				\def\MatInvC{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[2]}}}%
+				\def\MatInvD{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[3]}}}%
+				\def\MatInvE{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[4]}}}%
+				\def\MatInvF{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[5]}}}%
+				\def\MatInvG{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[6]}}}%
+				\def\MatInvH{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[7]}}}%
+				\def\MatInvI{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[8]}}}%
+				\def\MatInvJ{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[9]}}}%
+				\def\MatInvK{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[10]}}}%
+				\def\MatInvL{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[11]}}}%
+				\def\MatInvM{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[12]}}}%
+				\def\MatInvN{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[13]}}}%
+				\def\MatInvO{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[14]}}}%
+				\def\MatInvP{\ConvVersFrac*[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[15]}}}%
+			}%
+			{%
+				\def\MatInvA{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[0]}}}%
+				\def\MatInvB{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[1]}}}%
+				\def\MatInvC{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[2]}}}%
+				\def\MatInvD{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[3]}}}%
+				\def\MatInvE{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[4]}}}%
+				\def\MatInvF{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[5]}}}%
+				\def\MatInvG{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[6]}}}%
+				\def\MatInvH{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[7]}}}%
+				\def\MatInvI{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[8]}}}%
+				\def\MatInvJ{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[9]}}}%
+				\def\MatInvK{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[10]}}}%
+				\def\MatInvL{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[11]}}}%
+				\def\MatInvM{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[12]}}}%
+				\def\MatInvN{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[13]}}}%
+				\def\MatInvO{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[14]}}}%
+				\def\MatInvP{\ConvVersFrac[#2]{\py{inverse_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)[15]}}}%
+			}%
+			\begin{pNiceMatrix}[#3]
+				{\MatInvA} & {\MatInvB} & {\MatInvC} & {\MatInvD} \\
+				{\MatInvE} & {\MatInvF} & {\MatInvG} & {\MatInvH} \\
+				{\MatInvI} & {\MatInvJ} & {\MatInvK} & {\MatInvL} \\
+				{\MatInvM} & {\MatInvN} & {\MatInvO} & {\MatInvP} \\
+			\end{pNiceMatrix}%
+		}%
+	\fi
+	\ifnum \MAMATRICEAlen=3
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[1,3]\MatC%
+		\itemtomacro\MAMATRICEA[2,1]\MatD%
+		\itemtomacro\MAMATRICEA[2,2]\MatE%
+		\itemtomacro\MAMATRICEA[2,3]\MatF%
+		\itemtomacro\MAMATRICEA[3,1]\MatG%
+		\itemtomacro\MAMATRICEA[3,2]\MatH%
+		\itemtomacro\MAMATRICEA[3,3]\MatI%
+		\def\DETMATRICE{\xinteval{\py{det_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)}}}%
+		\xintifboolexpr{\DETMATRICE == 0}%
+			{\text{Matrice non inversible}}%
+			{%
+			\IfBooleanTF{#1}%
+			{%
+				\def\MatInvA{\ConvVersFrac*[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[0]}}}
+				\def\MatInvB{\ConvVersFrac*[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[1]}}}
+				\def\MatInvC{\ConvVersFrac*[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[2]}}}
+				\def\MatInvD{\ConvVersFrac*[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[3]}}}
+				\def\MatInvE{\ConvVersFrac*[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[4]}}}
+				\def\MatInvF{\ConvVersFrac*[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[5]}}}
+				\def\MatInvG{\ConvVersFrac*[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[6]}}}
+				\def\MatInvH{\ConvVersFrac*[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[7]}}}
+				\def\MatInvI{\ConvVersFrac*[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[8]}}}
+			}%
+			{%
+				\def\MatInvA{\ConvVersFrac[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[0]}}}
+				\def\MatInvB{\ConvVersFrac[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[1]}}}
+				\def\MatInvC{\ConvVersFrac[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[2]}}}
+				\def\MatInvD{\ConvVersFrac[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[3]}}}
+				\def\MatInvE{\ConvVersFrac[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[4]}}}
+				\def\MatInvF{\ConvVersFrac[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[5]}}}
+				\def\MatInvG{\ConvVersFrac[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[6]}}}
+				\def\MatInvH{\ConvVersFrac[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[7]}}}
+				\def\MatInvI{\ConvVersFrac[#2]{\py{inverse_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)[8]}}}
+			}%
+			\begin{pNiceMatrix}[#3]
+				{\MatInvA} & {\MatInvB} & {\MatInvC} \\
+				{\MatInvD} & {\MatInvE} & {\MatInvF} \\
+				{\MatInvG} & {\MatInvH} & {\MatInvI}
+			\end{pNiceMatrix}%
+			}%
+	\fi
+	\ifnum \MAMATRICEAlen=2
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[2,1]\MatC%
+		\itemtomacro\MAMATRICEA[2,2]\MatD%
+		\def\DETMATRICE{\xinteval{\py{det_matrice_DD(\MatA,\MatB,\MatC,\MatD)}}}%
+		\xintifboolexpr{\DETMATRICE == 0}%
+			{\text{Matrice non inversible}}%
+			{%
+			\IfBooleanTF{#1}%
+			{%
+				\def\MatInvA{\ConvVersFrac*[#2]{\py{inverse_matrice_DD(\MatA,\MatB,\MatC,\MatD)[0]}}}
+				\def\MatInvB{\ConvVersFrac*[#2]{\py{inverse_matrice_DD(\MatA,\MatB,\MatC,\MatD)[1]}}}
+				\def\MatInvC{\ConvVersFrac*[#2]{\py{inverse_matrice_DD(\MatA,\MatB,\MatC,\MatD)[2]}}}
+				\def\MatInvD{\ConvVersFrac*[#2]{\py{inverse_matrice_DD(\MatA,\MatB,\MatC,\MatD)[3]}}}
+			}%
+			{%
+				\def\MatInvA{\ConvVersFrac[#2]{\py{inverse_matrice_DD(\MatA,\MatB,\MatC,\MatD)[0]}}}
+				\def\MatInvB{\ConvVersFrac[#2]{\py{inverse_matrice_DD(\MatA,\MatB,\MatC,\MatD)[1]}}}
+				\def\MatInvC{\ConvVersFrac[#2]{\py{inverse_matrice_DD(\MatA,\MatB,\MatC,\MatD)[2]}}}
+				\def\MatInvD{\ConvVersFrac[#2]{\py{inverse_matrice_DD(\MatA,\MatB,\MatC,\MatD)[3]}}}
+			}%
+			\begin{pNiceMatrix}[#3]
+				{\MatInvA} & {\MatInvB} \\
+				{\MatInvC} & {\MatInvD}
+			\end{pNiceMatrix}%
+		}%
+	\fi
+}
+
+\NewDocumentCommand\DetMatriceLUA{ s O{} r() }{%
+	%*=fractions avec - devant
+	%2=options conversion
+	%3=matrice (,,;,,)
+	%---------------------
+	%lectures des matrices
+	\setsepchar{;/,}%
+	\readlist*\MAMATRICEA{#3}%
+	\def\MatDim{\MAMATRICEAlen}%
+	%les coeffs de A et le déterminant et les coeff de l'inverse
+	\ifnum \MAMATRICEAlen=4
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[1,3]\MatC%
+		\itemtomacro\MAMATRICEA[1,4]\MatD%
+		\itemtomacro\MAMATRICEA[2,1]\MatE%
+		\itemtomacro\MAMATRICEA[2,2]\MatF%
+		\itemtomacro\MAMATRICEA[2,3]\MatG%
+		\itemtomacro\MAMATRICEA[2,4]\MatH%
+		\itemtomacro\MAMATRICEA[3,1]\MatI%
+		\itemtomacro\MAMATRICEA[3,2]\MatJ%
+		\itemtomacro\MAMATRICEA[3,3]\MatK%
+		\itemtomacro\MAMATRICEA[3,4]\MatL%
+		\itemtomacro\MAMATRICEA[4,1]\MatM%
+		\itemtomacro\MAMATRICEA[4,2]\MatN%
+		\itemtomacro\MAMATRICEA[4,3]\MatO%
+		\itemtomacro\MAMATRICEA[4,4]\MatP%
+		%les solutions
+		\def\DETMATRICE{\xinteval{\py{det_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)}}}%
+	\fi
+	\ifnum \MAMATRICEAlen=3
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[1,3]\MatC%
+		\itemtomacro\MAMATRICEA[2,1]\MatD%
+		\itemtomacro\MAMATRICEA[2,2]\MatE%
+		\itemtomacro\MAMATRICEA[2,3]\MatF%
+		\itemtomacro\MAMATRICEA[3,1]\MatG%
+		\itemtomacro\MAMATRICEA[3,2]\MatH%
+		\itemtomacro\MAMATRICEA[3,3]\MatI%
+		\def\DETMATRICE{\xinteval{\py{det_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)}}}%
+	\fi
+	\ifnum \MAMATRICEAlen=2
+		\itemtomacro\MAMATRICEA[1,1]\MatA%
+		\itemtomacro\MAMATRICEA[1,2]\MatB%
+		\itemtomacro\MAMATRICEA[2,1]\MatC%
+		\itemtomacro\MAMATRICEA[2,2]\MatD%
+		\def\DETMATRICE{\xinteval{\py{det_matrice_DD(\MatA,\MatB,\MatC,\MatD)}}}%
+	\fi
+	\IfBooleanTF{#1}%
+		{%
+			\ConvVersFrac*[#2]{\DETMATRICE}%
+		}%
+		{%
+			\ConvVersFrac[#2]{\DETMATRICE}%
+		}%
+}
+
+\fi
+
+\endinput
