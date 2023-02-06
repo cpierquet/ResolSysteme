@@ -1,0 +1,101 @@
+% !TeX TXS-program:compile = txs:///lualatex
+
+\documentclass[french,a4paper,10pt]{article}
+\usepackage[margin=1.5cm]{geometry}
+\usepackage{ResolSysteme}
+\usepackage{systeme}
+\usepackage{codehigh}
+\sisetup{locale=FR,output-decimal-marker={,}}
+\usepackage{babel}
+
+\begin{document}
+
+\part*{Version \og classique \fg{} avec xint}
+
+\section{Préambule, sans le package pyluatex}
+
+\begin{codehigh}
+\documentclass[french,a4paper,10pt]{article}
+\usepackage[margin=1.5cm]{geometry}
+\usepackage{ResolSysteme}                     %version classique
+\usepackage{systeme}
+\sisetup{locale=FR,output-decimal-marker={,}}
+\end{codehigh}
+
+\section{Déterminant d'une matrice, 2x2 ou 3x3}
+
+\begin{demohigh}
+Le déterminant de $A=\begin{pNiceMatrix} 1&2 \\ 3&4 \end{pNiceMatrix}$ est
+$\det(A)=\DetMatrice(1,2;3,4)$.
+\end{demohigh}
+
+\begin{demohigh}
+Le déterminant de $A=\begin{pNiceMatrix} -1&{0,5} \\ \frac12&4 \end{pNiceMatrix}$ est
+$\det(A)=\DetMatrice[dec](-1,0.5;1/2,4)$.
+\end{demohigh}
+
+\begin{demohigh}
+Le déterminant de $A=\begin{pNiceMatrix} -1&\frac13&4 \\ \frac13&4&-1 \\ -1&0&0 \end{pNiceMatrix}$ est
+$\det(A) \approx \DetMatrice[dec=3](-1,1/3,4;1/3,4,-1;-1,0,0)$.
+\end{demohigh}
+
+\section{Inverse d'une matrice, 2x2 ou 3x3}
+
+\begin{demohigh}
+L'inverse de $A=\begin{pNiceMatrix} 1&2 \\ 3&4 \end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverse<cell-space-limits=2pt>(1,2;3,4)$.
+\end{demohigh}
+
+\begin{demohigh}
+L'inverse de $A=\begin{pNiceMatrix} 1&2 \\ 3&4 \end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverse*<cell-space-limits=2pt>(1,2;3,4)$.
+\end{demohigh}
+
+\begin{demohigh}
+L'inverse de $A=\begin{pNiceMatrix} 1&2 \\ 3&4 \end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverse[d]<cell-space-limits=2pt>(1,2;3,4)$.
+\end{demohigh}
+
+\begin{demohigh}
+L'inverse de $A=\begin{pNiceMatrix} 1&2&3\\4&5&6\\7&8&8 \end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverse<cell-space-limits=2pt>(1,2,3;4,5,6;7,8,8)$.
+\end{demohigh}
+
+\begin{demohigh}
+L'inverse de $A=\begin{pNiceMatrix} 1&2&3\\4&5&6\\7&8&8 \end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverse[n]<cell-space-limits=2pt>(1,2,3;4,5,6;7,8,8)$.
+\end{demohigh}
+
+\section*{Résolution d'un système, 2x2 ou 3x3}
+
+\begin{demohigh}
+La solution de $\systeme{-9x-8y=-8,3x-6y=-7}$ est $\mathcal{S}=%
+\left\lbrace \SolutionSysteme(-9,-8;3,-6)(-8,-7) \right\rbrace$.
+\end{demohigh}
+
+\begin{demohigh}
+La solution de $\systeme{-9x-8y=-8,3x-6y=-7}$ est $\mathcal{S}=%
+\left\lbrace \SolutionSysteme*[d](-9,-8;3,-6)(-8,-7) \right\rbrace$.
+\end{demohigh}
+
+\begin{demohigh}
+La solution de $\systeme{x+y+z=-1,3x+2y-z=6,-x-y+2z=-5}$ est $\mathcal{S}=%
+\left\lbrace \SolutionSysteme(1,1,1;3,2,-1;-1,-1,2)(-1,6,-5) \right\rbrace$.
+\end{demohigh}
+
+\begin{demohigh}
+La solution de $\systeme{x+y+z=-1,3x+2y-z=6,-x-y+2z=-5}$ est donnée par $X=%
+\SolutionSysteme(1,1,1;3,2,-1;-1,-1,2)(-1,6,-5)[Matrice]$.
+\end{demohigh}
+
+\begin{demohigh}
+La solution de $\systeme{3x+y-2z=-1,2x-y+z=4,x-y-2z=5}$ est $\mathcal{S}=%
+\left\lbrace \SolutionSysteme(3,1,-2;2,-1,1;1,-1,-2)(-1,4,5) \right\rbrace$.
+\end{demohigh}
+
+\begin{demohigh}
+La solution de $\systeme{3x+y-2z=-1,2x-y+z=4,x-y-2z=5}$ est $\mathcal{S}=%
+\left\lbrace \SolutionSysteme*[d](3,1,-2;2,-1,1;1,-1,-2)(-1,4,5) \right\rbrace$.
+\end{demohigh}
+
+\end{document}

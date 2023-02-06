@@ -1,0 +1,103 @@
+% !TeX TXS-program:compile = txs:///lualatex/[--shell-escape]
+
+\documentclass[french,a4paper,10pt]{article}
+\usepackage[margin=1.5cm]{geometry}
+\usepackage[executable=python.exe]{pyluatex}
+\usepackage[lua]{ResolSysteme}
+\usepackage{systeme}
+\usepackage{codehigh}
+\sisetup{locale=FR,output-decimal-marker={,}}
+\usepackage{babel}
+
+\begin{document}
+
+\part*{Version \og LUA \fg{} avec pyluatex}
+
+\section{Préambule, sans le package pyluatex}
+
+\begin{codehigh}
+\documentclass[french,a4paper,10pt]{article}
+\usepackage[margin=1.5cm]{geometry}
+\usepackage[executable=python.exe]{pyluatex}
+\usepackage[lua]{ResolSysteme}              %version pyluatex, lua + shell-escape
+\usepackage{systeme}
+\sisetup{locale=FR,output-decimal-marker={,}}
+\end{codehigh}
+
+\section{Inverse d'une matrice, 2x2 ou 3x3 ou 4x4}
+
+\begin{demohigh}
+L'inverse de $A=\begin{pNiceMatrix} 1&2 \\ 3&4 \end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverseLUA<cell-space-limits=2pt>(1,2;3,4)$.
+\end{demohigh}
+
+\begin{demohigh}
+L'inverse de $A=\begin{pNiceMatrix} 1&2 \\ 3&6 \end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverseLUA<cell-space-limits=2pt>(1,2;3,6)$.
+\end{demohigh}
+
+\begin{demohigh}
+L'inverse de $A=\begin{pNiceMatrix} 1&2 \\ 3&4 \end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverseLUA*[d]<cell-space-limits=2pt>(1,2;3,4)$.
+\end{demohigh}
+
+\begin{demohigh}
+L'inverse de $A=\begin{pNiceMatrix} 1&2&3\\4&5&6\\7&8&8 \end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverseLUA<cell-space-limits=2pt>(1,2,3;4,5,6;7,8,8)$.
+\end{demohigh}
+
+\begin{demohigh}
+L'inverse de $A=\begin{pNiceMatrix} 1&2&3\\4&5&6\\7&8&8 \end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverseLUA*<cell-space-limits=2pt>(1,2,3;4,5,6;7,8,8)$.
+\end{demohigh}
+
+\begin{demohigh}
+L'inverse de $A=\begin{pNiceMatrix} 1&2&3&4\\5&6&7&0\\1&1&1&1\\2&-3&-5&-6 \end{pNiceMatrix}$
+est $A^{-1}=\MatriceInverseLUA*[n]<cell-space-limits=2pt>(1,2,3,4;5,6,7,0;1,1,1,1;2,-3,-5,-6)$.
+\end{demohigh}
+
+\pagebreak
+
+\section{Résolution d'un système, 2x2 ou 3x3 ou 4x4}
+
+\begin{demohigh}
+La solution de $\systeme{-9x-8y=-8,3x-6y=-7}$ est $\mathcal{S}=%
+\left\lbrace \SolutionSystemeLUA(-9,-8;3,-6)(-8,-7) \right\rbrace$.
+\end{demohigh}
+
+\begin{demohigh}
+La solution de $\systeme{x+2y=-5,4x+8y=1}$ est $\mathcal{S}=%
+\left\lbrace \SolutionSystemeLUA(1,2;4,8)(-5,1) \right\rbrace$.
+\end{demohigh}
+
+\begin{demohigh}
+La solution de $\systeme{-9x-8y=-8,3x-6y=-7}$ est $\mathcal{S}=%
+\left\lbrace \SolutionSystemeLUA*[d](-9,-8;3,-6)(-8,-7) \right\rbrace$.
+\end{demohigh}
+
+\begin{demohigh}
+La solution de $\systeme{x+y+z=-1,3x+2y-z=6,-x-y+2z=-5}$ est $\mathcal{S}=%
+\left\lbrace \SolutionSystemeLUA(1,1,1;3,2,-1;-1,-1,2)(-1,6,-5) \right\rbrace$.
+\end{demohigh}
+
+\begin{demohigh}
+La solution de $\systeme{x+y+z=-1,3x+2y-z=-5,-x-y+2z=0}$ est donnée par $X=%
+\SolutionSystemeLUA*[d]<cell-space-limits=2pt>(1,1,1;3,2,-1;-1,-1,2)(-1,-5,0)[Matrice]$.
+\end{demohigh}
+
+\begin{demohigh}
+La solution de $\systeme[xyzt]{y+z+t=1,x+z+t=-1,x+y+t=1,x+y+z=0}$ est $\mathcal{S}=%
+\left\lbrace\SolutionSystemeLUA*[d](0,1,1,1;1,0,1,1;1,1,0,1;1,1,1,0)(1,-1,1,0)\right\rbrace$.
+\end{demohigh}
+
+\begin{demohigh}
+La solution de $\systeme[xyzt]{x+2y+3z+4t=-10,5x+6y+7z=0,x+y+z+t=4,-2x-3y-5z-6t=7}$ est $\mathcal{S}=
+\left\lbrace
+\SolutionSystemeLUA
+    [dec]<cell-space-limits=2pt>
+    (1,2,3,4;5,6,7,0;1,1,1,1;-2,-3,-5,-6)(-10,0,4,7)
+    [Matrice]
+\right\rbrace$.
+\end{demohigh}
+
+\end{document}

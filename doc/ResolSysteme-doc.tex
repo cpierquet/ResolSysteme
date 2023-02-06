@@ -8,7 +8,11 @@
 \usepackage[executable=python.exe]{pyluatex}
 \usepackage[table,svgnames]{xcolor}
 \usepackage{amsmath,amssymb}
+\usepackage[bold-style=ISO,math-style=french]{unicode-math}
+\setmainfont{TeX Gyre Schola}
+\setmathfont{TeX Gyre Schola Math}
 \usepackage[lua]{ResolSysteme}
+\usepackage{awesomebox}
 \usepackage{fontawesome5}
 \usepackage{systeme}
 \usepackage{enumitem}
@@ -70,6 +74,10 @@
 
 \begin{document}
 
+\setlength{\aweboxleftmargin}{0.07\linewidth}
+\setlength{\aweboxcontentwidth}{0.93\linewidth}
+\setlength{\aweboxvskip}{8pt}
+
 \pagestyle{fancy}
 
 \thispagestyle{empty}
@@ -121,7 +129,7 @@
 \vspace{1cm}
 
 \begin{center}
-	\begin{tcolorbox}[enhanced,colframe=ForestGreen,colback=white,center,width=0.9\linewidth]
+	\begin{tcolorbox}[enhanced,colframe=ForestGreen,colback=lightgray!5,center,width=0.95\linewidth,drop fuzzy shadow=lightgray]
 	Le \textbf{déterminant} de $A=\begin{pNiceMatrix} -1&{0,5} \\ \frac12&4 \end{pNiceMatrix}$ est
 	$\det(A)=\DetMatrice[dec](-1,0.5;1/2,4)$.
 	
@@ -170,6 +178,7 @@
 
 \subsection{Introduction}
 
+\begin{noteblock}
 L'idée est de \textit{proposer} des outils pour travailler sur des systèmes linéaires (de taille réduite !) en permettant :
 
 \begin{itemize}
@@ -177,6 +186,10 @@ L'idée est de \textit{proposer} des outils pour travailler sur des systèmes li
 	\item d'afficher le \textbf{déterminant} et l'éventuelle \textbf{inverse} de la matrice des coefficients.
 \end{itemize}
 
+D'autres outils seront peut-être ajoutés ultérieurement.
+\end{noteblock}
+
+\begin{importantblock}
 À noter que les calculs -- en interne -- peuvent être effectués de deux manières :
 
 \begin{itemize}
@@ -184,19 +197,17 @@ L'idée est de \textit{proposer} des outils pour travailler sur des systèmes li
 	\item via \textsf{lua} et le package \textsf{pyluatex} (à charger manuellement du fait des options spécifiques) pour des formats \textbf{2x2}, \textbf{3x3} ou \textbf{4x4}.
 \end{itemize}
 
-L'utilisation de \textsf{lua} nécessite une compilation adaptée, à savoir en \hologo{LuaLaTeX} et en activant le mode \textsf{--shell-escape}.
+Il n'est pas prévu -- pour le moment -- de travailler sur des matrices/systèmes plus grands.
+\end{importantblock}
 
-\smallskip
-
-La méthode par \textsf{pyluatex} utilise le module \texttt{sympy}, qui est donc à installer en amont !
+\begin{warningblock}
+L'utilisation de \textsf{lua} nécessite une compilation adaptée, à savoir en \hologo{LuaLaTeX} et en activant le mode \textsf{--shell-escape}. La méthode par \textsf{pyluatex} utilise le module \texttt{sympy}, qui doit donc être installée !
+\end{warningblock}
 
 \subsection{Packages utilisés, choix de formatage}
 
-Le package est compatible avec les compilations usuelles en \textsf{latex}, \textsf{pdflatex}, \textsf{lualatex} (obligatoire pour le \textsf{lua} !!) ou \textsf{xelatex}.
-
-\medskip
-
-Il charge les packages et librairies suivantes :
+\begin{noteblock}
+Le package charge les packages suivantes :
 
 \begin{itemize}
 	\item \texttt{xintexpr} et \texttt{xinttools} ;
@@ -204,27 +215,34 @@ Il charge les packages et librairies suivantes :
 	\item \texttt{xstring} et \texttt{listofitems}.
 \end{itemize}
 
+Il est compatible avec les compilations usuelles en \textsf{latex}, \textsf{pdflatex}, \textsf{lualatex} (obligatoire pour le \textsf{lua} !!) ou \textsf{xelatex}.
+\end{noteblock}
+
+\begin{importantblock}
 Les nombres sont formatés par la commande \texttt{\textbackslash num} de \textsf{sinuitx}, donc les options choisies par l'utilisateur se propageront aux résultats numériques.
 
 \smallskip
 
 L'affichage des matrices est gérée par le package \textsf{nicematrix}, et des options spécifiques \textit{simples} pourront être placées dans les différentes commandes.
+\end{importantblock}
 
 \subsection{Chargement du package, et option}
 
+\begin{importantblock}
 Le package peut donc se charger de deux manières différentes, suivant si l'utilisateur utilise le moteur \textsf{lua} ou non.
 
-À noter que les commandes \textit{classiques} sont disponibles même si l'utilisateur charge l'option \textsf{lua}.
+Les commandes \textit{classiques} sont disponibles même si l'option \textsf{lua} est activée.
+\end{importantblock}
 
 \begin{PresentationCode}{listing only}
 %chargement du package sans passer par pyluatex, calculs via xint
-\usepackage{ResolSystemes}
+\usepackage{ResolSysteme}
 \end{PresentationCode}
 
 \begin{PresentationCode}{listing only}
 %chargement du package pyluatex et du package avec [lua]
 \usepackage[options]{pyluatex}
-\usepackage[lua]{ResolSystemes}
+\usepackage[lua]{ResolSysteme}
 \end{PresentationCode}
 
 \pagebreak
@@ -235,7 +253,9 @@ Le package peut donc se charger de deux manières différentes, suivant si l'uti
 
 \subsection{La commande}
 
+\begin{cautionblock}
 En \textit{interne}, le code utilise une commande pour formater un résultat sous forme fractionnaire, avec gestion des entiers et gestion du signe \og $-$ \fg.
+\end{cautionblock}
 
 \begin{PresentationCode}{listing only}
 \ConvVersFrac(*)[option de formatage]{calcul}
@@ -243,6 +263,7 @@ En \textit{interne}, le code utilise une commande pour formater un résultat sou
 
 \subsection{Utilisation}
 
+\begin{tipblock}
 Concernant cette commande, qui est dans un bloc \texttt{ensuremath} :
 
 \begin{itemize}
@@ -256,6 +277,7 @@ Concernant cette commande, qui est dans un bloc \texttt{ensuremath} :
 	\end{itemize}
 	\item le second argument, \textit{obligatoire}, est quant à lui, le calcul en syntaxe \textsf{xint}.
 \end{itemize}
+\end{tipblock}
 
 \begin{PresentationCode}{listing only}
 %sortie par défaut (fraction avec - sur numérateur)
@@ -284,6 +306,7 @@ Concernant cette commande, qui est dans un bloc \texttt{ensuremath} :
 
 \subsection{Interaction avec les commandes \og matricielles \fg, limitations}
 
+\begin{warningblock}
 En \textit{interne}, le formatage des résultats est géré par cette commande, et les options disponibles existent donc de la même manière pour les commandes liées aux systèmes linéaires.
 
 \smallskip
@@ -293,6 +316,7 @@ Il ne sera par contre pas possible de spécifier des options différentes pour c
 \smallskip
 
 Les \textit{transformations} en fraction devraient pouvoir fonctionner avec des calculs \textit{classiques}, mais il est possible que, dans des cas \textit{spécifiques}, les résultats ne soient pas ceux attendus !
+\end{warningblock}
 
 \pagebreak
 
@@ -300,12 +324,14 @@ Les \textit{transformations} en fraction devraient pouvoir fonctionner avec des 
 
 \subsection{Introduction}
 
+\begin{cautionblock}
 La première commande (matricielle) disponible est pour calculer le déterminant d'une matrice :
 
 \begin{itemize}
 	\item \textbf{2x2} ou \textbf{3x3} pour le package \textit{classique} ;
 	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} pour le package \textit{lua}.
 \end{itemize}
+\end{cautionblock}
 
 \begin{PresentationCode}{listing only}
 %version classique
@@ -317,6 +343,7 @@ La première commande (matricielle) disponible est pour calculer le déterminant
 
 \subsection{Utilisation}
 
+\begin{tipblock}
 Concernant cette commande, qui est à insérer dans un environnement \textit{math} :
 
 \begin{itemize}
@@ -330,6 +357,7 @@ Concernant cette commande, qui est à insérer dans un environnement \textit{mat
 	\end{itemize}
 	\item le second argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice donnée par ses coefficients \textsf{a11,a12,...;a21,a22,...} (syntaxe héritée de \texttt{sympy}).
 \end{itemize}
+\end{tipblock}
 
 \begin{PresentationCode}{}
 %version classique
@@ -369,12 +397,14 @@ $\det(A) \approx \DetMatriceLUA[dec=3](-1,1/3,4;1/3,4,-1;-1,0,0)$.
 
 \subsection{Introduction}
 
+\begin{cautionblock}
 La deuxième commande (matricielle) disponible est pour calculer l'éventuelle inverse d'une matrice :
 
 \begin{itemize}
 	\item \textbf{2x2} ou \textbf{3x3} pour le package \textit{classique} ;
 	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} pour le package \textit{lua}.
 \end{itemize}
+\end{cautionblock}
 
 \begin{PresentationCode}{listing only}
 %version classique
@@ -386,6 +416,7 @@ La deuxième commande (matricielle) disponible est pour calculer l'éventuelle i
 
 \subsection{Utilisation}
 
+\begin{tipblock}
 Concernant cette commande, qui est à insérer dans un environnement \textit{math} :
 
 \begin{itemize}
@@ -400,8 +431,8 @@ Concernant cette commande, qui est à insérer dans un environnement \textit{mat
 	\item le deuxième argument, \textit{optionnel} et entre \textsf{<...>} correspond aux \Cle{options} à passer à l'environnement \texttt{pNiceMatrix} ;
 	\item le troisième argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice donnée par ses coefficients \textsf{a11,a12,...;a21,a22,...} (syntaxe héritée de \texttt{sympy}).
 \end{itemize}
-
 À noter que si la matrice n'est pas inversible, le texte \texttt{Matrice non inversible} est affiché.
+\end{tipblock}
 
 \begin{PresentationCode}{}
 %version classique
@@ -431,12 +462,14 @@ $A^{-1}=\MatriceInverseLUA*[n]<cell-space-limits=2pt>(1,2,3,4;5,6,7,0;1,1,1,1;-2
 
 \subsection{Introduction}
 
+\begin{cautionblock}
 La deuxième commande (matricielle) disponible est pour déterminer l'éventuelle solution d'un système linéaire  qui s'écrit matriciellement $A\times X=B$:
 
 \begin{itemize}
 	\item \textbf{2x2} ou \textbf{3x3} pour le package \textit{classique} ;
 	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} pour le package \textit{lua}.
 \end{itemize}
+\end{cautionblock}
 
 \begin{PresentationCode}{listing only}
 %version classique
@@ -448,6 +481,7 @@ La deuxième commande (matricielle) disponible est pour déterminer l'éventuell
 
 \subsection{Utilisation}
 
+\begin{tipblock}
 Concernant cette commande, qui est à insérer dans un environnement \textit{math} :
 
 \begin{itemize}
@@ -464,8 +498,8 @@ Concernant cette commande, qui est à insérer dans un environnement \textit{mat
 	\item le quatrième argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice $B$ donnée par ses coefficients \textsf{b11;b21;...} (syntaxe héritée de \texttt{sympy}) ;
 	\item le dernier argument, \textit{optionnel} et entre \textsf{[...]}, permet -- grâce à \Cle{Matrice} -- de présenter le vecteur solution.
 \end{itemize}
-
 À noter que si la matrice n'est pas inversible, le texte \texttt{Matrice non inversible} est affiché.
+\end{tipblock}
 
 \begin{PresentationCode}{}
 %version classique
@@ -489,7 +523,9 @@ est $\mathcal{S}=%
 		(1,2,3,4;5,6,7,0;1,1,1,1;-2,-3,-5,-6)(-10,0,4,7)%
 		[Matrice]
 \right\rbrace$.
+\end{PresentationCode}
 
+\begin{PresentationCode}{}
 %pas de solution
 La solution de $\systeme{x+2y=-5,4x+8y=1}$ est $\mathcal{S}=%
 \left\lbrace \SolutionSystemeLUA(1,2;4,8)(-5,1) \right\rbrace$.
