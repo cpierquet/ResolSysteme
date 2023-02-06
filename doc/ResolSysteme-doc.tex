@@ -1,0 +1,504 @@
+% !TeX TXS-program:compile = txs:///arara
+% arara: lualatex: {shell: yes, synctex: no, interaction: batchmode}
+% arara: lualatex: {shell: yes, synctex: no, interaction: batchmode} if found('log', '(undefined references|Please rerun|Rerun to get)')
+
+\documentclass[a4paper,11pt]{article}
+\def\TPversion{0.1.0}
+\def\TPdate{6 Février 2023}
+\usepackage[executable=python.exe]{pyluatex}
+\usepackage[table,svgnames]{xcolor}
+\usepackage{amsmath,amssymb}
+\usepackage[lua]{ResolSysteme}
+\usepackage{fontawesome5}
+\usepackage{systeme}
+\usepackage{enumitem}
+\usepackage{tabularray}
+\usepackage{multicol}
+\usepackage{fancyvrb}
+\usepackage{fancyhdr}
+\sisetup{locale=FR,output-decimal-marker={,}}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\lfoot{\sffamily\small [ResolSysteme]}
+\cfoot{\sffamily\small - \thepage{} -}
+\rfoot{\hyperlink{matoc}{\small\faArrowAltCircleUp[regular]}}
+
+%\usepackage{hvlogos}
+\usepackage{hologo}
+\providecommand\tikzlogo{Ti\textit{k}Z}
+\providecommand\TeXLive{\TeX{}Live\xspace}
+\providecommand\PSTricks{\textsf{PSTricks}\xspace}
+\let\pstricks\PSTricks
+\let\TikZ\tikzlogo
+\newcommand\TableauDocumentation{%
+	\begin{tblr}{width=\linewidth,colspec={X[c]X[c]X[c]X[c]X[c]X[c]},cells={font=\sffamily}}
+		{\huge \LaTeX} & & & & &\\
+		& {\huge \hologo{pdfLaTeX}} & & & & \\
+		& & {\huge \hologo{LuaLaTeX}} & & & \\
+		& & & {\huge \TikZ} & & \\
+		& & & & {\huge \TeXLive} & \\
+		& & & & & {\huge \hologo{MiKTeX}} \\
+	\end{tblr}
+}
+
+\usepackage{hyperref}
+\urlstyle{same}
+\hypersetup{pdfborder=0 0 0}
+\usepackage[margin=1.5cm]{geometry}
+\setlength{\parindent}{0pt}
+\definecolor{LightGray}{gray}{0.9}
+
+\usepackage[french]{babel}
+
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{minted}
+\NewTCBListing{PresentationCode}{ O{blue} m }{%
+	sharp corners=downhill,enhanced,arc=12pt,skin=bicolor,%
+	colback=#1!1!white,colframe=#1!75!black,colbacklower=white,%
+	attach boxed title to top right={yshift=-\tcboxedtitleheight},title=Code \LaTeX,%
+	boxed title style={%
+		colframe=#1!75!black,colback=#1!15!white,%
+		,sharp corners=downhill,arc=12pt,%
+	},%
+	fonttitle=\color{#1!90!black}\itshape\ttfamily\footnotesize,%
+	listing engine=minted,minted style=colorful,
+	minted language=tex,minted options={tabsize=4,fontsize=\small,autogobble},
+	#2
+}
+
+\newcommand\Cle[1]{{\bfseries\sffamily\textlangle #1\textrangle}}
+
+\begin{document}
+
+\pagestyle{fancy}
+
+\thispagestyle{empty}
+
+\vspace{2cm}
+
+\begin{center}
+	\begin{minipage}{0.75\linewidth}
+	\begin{tcolorbox}[colframe=yellow,colback=yellow!15]
+		\begin{center}
+			\begin{tabular}{c}
+				{\Huge \texttt{ResolSysteme [fr]}}\\
+				\\
+				{\LARGE Des outils pour des} \\
+				\\
+				{\LARGE systèmes linéaires,} \\
+				\\
+				{\LARGE avec xint ou lua.} \\
+			\end{tabular}
+			
+			\bigskip
+			
+			{\small \texttt{Version \TPversion{} -- \TPdate}}
+		\end{center}
+	\end{tcolorbox}
+\end{minipage}
+\end{center}
+
+\vspace{0.5cm}
+
+\begin{center}
+	\begin{tabular}{c}
+	\texttt{Cédric Pierquet}\\
+	{\ttfamily c pierquet -- at -- outlook . fr}\\
+	\texttt{\url{https://github.com/cpierquet/ResolSysteme}}
+\end{tabular}
+\end{center}
+
+\vspace{0.25cm}
+
+{$\blacktriangleright$~~Des commandes pour travailler sur des matrices carrées (2x2, 3x3 ou 4x4).}
+
+\smallskip
+
+{$\blacktriangleright$~~Des commandes pour résoudre des systèmes linéaires (2x2, 3x3 ou 4x4).}
+
+\smallskip
+
+\vspace{1cm}
+
+\begin{center}
+	\begin{tcolorbox}[enhanced,colframe=ForestGreen,colback=white,center,width=0.9\linewidth]
+	Le \textbf{déterminant} de $A=\begin{pNiceMatrix} -1&{0,5} \\ \frac12&4 \end{pNiceMatrix}$ est
+	$\det(A)=\DetMatrice[dec](-1,0.5;1/2,4)$.
+	
+	\medskip
+	
+	L'\textbf{inverse} de la matrice $A=\begin{pNiceMatrix} 1&2&3&4\\5&6&7&0\\1&1&1&1\\-2&-3&-5&-6 \end{pNiceMatrix}$ est $A^{-1}=\MatriceInverseLUA*[n]<cell-space-limits=2pt>(1,2,3,4;5,6,7,0;1,1,1,1;-2,-3,-5,-6)$.
+	
+	\medskip
+	
+	La \textbf{solution} de $\systeme[xyzt]{y+z+t=1,x+z+t=-1,x+y+t=1,x+y+z=0}$ est $\mathcal{S}=\left\lbrace\SolutionSystemeLUA*[d](0,1,1,1;1,0,1,1;1,1,0,1;1,1,1,0)(1,-1,1,0)\right\rbrace$.
+	\end{tcolorbox}
+\end{center}
+
+\vspace{0.5cm}
+
+%\hfill{}\textit{Merci aux membres du groupe \faFacebook{} du \og Coin \LaTeX{} \fg{} pour leur aide et leurs idées !}
+
+%\hfill{}\textit{Merci à Denis Bitouzé et à Patrick Bideault pour leurs retours et idées !}
+
+\vfill
+
+\hrule
+
+\medskip
+
+\TableauDocumentation
+
+\medskip
+
+\hrule
+
+\medskip
+
+\newpage
+
+\phantomsection
+\hypertarget{matoc}{}
+
+\tableofcontents
+
+\newpage
+
+\part{Introduction}
+
+\section{Le package ResolSysteme}
+
+\subsection{Introduction}
+
+L'idée est de \textit{proposer} des outils pour travailler sur des systèmes linéaires (de taille réduite !) en permettant :
+
+\begin{itemize}
+	\item d'afficher la \textbf{solution} (si elle existe) ;
+	\item d'afficher le \textbf{déterminant} et l'éventuelle \textbf{inverse} de la matrice des coefficients.
+\end{itemize}
+
+À noter que les calculs -- en interne -- peuvent être effectués de deux manières :
+
+\begin{itemize}
+	\item via les packages \textsf{xint*} pour des formats \textbf{2x2} ou \textbf{3x3} ;
+	\item via \textsf{lua} et le package \textsf{pyluatex} (à charger manuellement du fait des options spécifiques) pour des formats \textbf{2x2}, \textbf{3x3} ou \textbf{4x4}.
+\end{itemize}
+
+L'utilisation de \textsf{lua} nécessite une compilation adaptée, à savoir en \hologo{LuaLaTeX} et en activant le mode \textsf{--shell-escape}.
+
+\smallskip
+
+La méthode par \textsf{pyluatex} utilise le module \texttt{sympy}, qui est donc à installer en amont !
+
+\subsection{Packages utilisés, choix de formatage}
+
+Le package est compatible avec les compilations usuelles en \textsf{latex}, \textsf{pdflatex}, \textsf{lualatex} (obligatoire pour le \textsf{lua} !!) ou \textsf{xelatex}.
+
+\medskip
+
+Il charge les packages et librairies suivantes :
+
+\begin{itemize}
+	\item \texttt{xintexpr} et \texttt{xinttools} ;
+	\item \texttt{sinuitx}, \texttt{nicefrac} et \texttt{nicematrix} ;
+	\item \texttt{xstring} et \texttt{listofitems}.
+\end{itemize}
+
+Les nombres sont formatés par la commande \texttt{\textbackslash num} de \textsf{sinuitx}, donc les options choisies par l'utilisateur se propageront aux résultats numériques.
+
+\smallskip
+
+L'affichage des matrices est gérée par le package \textsf{nicematrix}, et des options spécifiques \textit{simples} pourront être placées dans les différentes commandes.
+
+\subsection{Chargement du package, et option}
+
+Le package peut donc se charger de deux manières différentes, suivant si l'utilisateur utilise le moteur \textsf{lua} ou non.
+
+À noter que les commandes \textit{classiques} sont disponibles même si l'utilisateur charge l'option \textsf{lua}.
+
+\begin{PresentationCode}{listing only}
+%chargement du package sans passer par pyluatex, calculs via xint
+\usepackage{ResolSystemes}
+\end{PresentationCode}
+
+\begin{PresentationCode}{listing only}
+%chargement du package pyluatex et du package avec [lua]
+\usepackage[options]{pyluatex}
+\usepackage[lua]{ResolSystemes}
+\end{PresentationCode}
+
+\pagebreak
+
+\part{Commandes}
+
+\section{Une commande interne : écriture sous forme d'une fraction}
+
+\subsection{La commande}
+
+En \textit{interne}, le code utilise une commande pour formater un résultat sous forme fractionnaire, avec gestion des entiers et gestion du signe \og $-$ \fg.
+
+\begin{PresentationCode}{listing only}
+\ConvVersFrac(*)[option de formatage]{calcul}
+\end{PresentationCode}
+
+\subsection{Utilisation}
+
+Concernant cette commande, qui est dans un bloc \texttt{ensuremath} :
+
+\begin{itemize}
+	\item la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} avant l'éventuelle fraction ;
+	\item le premier argument, \textit{optionnel} et entre \textsf{[...]} permet de spécifier un formatage du résultat :
+	\begin{itemize}
+		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
+		\item \Cle{d} pour l'affichage de la fraction en mode \textsf{dfrac} ;
+		\item \Cle{dec} pour l'affichage du résultat en mode \texttt{décimal} (sans arrondi !) ;
+		\item \Cle{dec=k} pour l'affichage du résultat en mode \texttt{décimal} arrondi à $10^{-k}$ ;
+	\end{itemize}
+	\item le second argument, \textit{obligatoire}, est quant à lui, le calcul en syntaxe \textsf{xint}.
+\end{itemize}
+
+\begin{PresentationCode}{listing only}
+%sortie par défaut (fraction avec - sur numérateur)
+\ConvVersFrac{-10+1/3*(-5/16)}
+
+%sortie avec - avant la fraction
+\ConvVersFrac*{-10+1/3*(-5/16)}
+
+%sortie en displaystyle
+\ConvVersFrac*[d]{-10+1/3*(-5/16)}
+
+%sortie en décimal arrondi à 0,0001
+\ConvVersFrac[dec=4]{-10+1/3*(-5/16)}
+
+%entier correctement formaté
+\ConvVersFrac{2+91/7}
+\end{PresentationCode}
+
+\begin{PresentationCode}{text only}
+\hfill\ConvVersFrac{-10+1/3*(-5/16)} \qquad
+\ConvVersFrac*{-10+1/3*(-5/16)} \qquad
+\ConvVersFrac*[d]{-10+1/3*(-5/16)} \qquad
+\ConvVersFrac[dec=4]{-10+1/3*(-5/16)} \qquad
+\ConvVersFrac{2+91/7}\hfill~
+\end{PresentationCode}
+
+\subsection{Interaction avec les commandes \og matricielles \fg, limitations}
+
+En \textit{interne}, le formatage des résultats est géré par cette commande, et les options disponibles existent donc de la même manière pour les commandes liées aux systèmes linéaires.
+
+\smallskip
+
+Il ne sera par contre pas possible de spécifier des options différentes pour chacun des coefficients, autrement dit l'éventuelle option se propagera sur l'ensemble des résultats !
+
+\smallskip
+
+Les \textit{transformations} en fraction devraient pouvoir fonctionner avec des calculs \textit{classiques}, mais il est possible que, dans des cas \textit{spécifiques}, les résultats ne soient pas ceux attendus !
+
+\pagebreak
+
+\section{Calcul de déterminant}
+
+\subsection{Introduction}
+
+La première commande (matricielle) disponible est pour calculer le déterminant d'une matrice :
+
+\begin{itemize}
+	\item \textbf{2x2} ou \textbf{3x3} pour le package \textit{classique} ;
+	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} pour le package \textit{lua}.
+\end{itemize}
+
+\begin{PresentationCode}{listing only}
+%version classique
+\DetMatrice(*)[option de formatage](matrice)
+
+%version lua
+\DetMatriceLUA(*)[option de formatage](matrice)
+\end{PresentationCode}
+
+\subsection{Utilisation}
+
+Concernant cette commande, qui est à insérer dans un environnement \textit{math} :
+
+\begin{itemize}
+	\item la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} avant l'éventuelle fraction ;
+	\item le premier argument, \textit{optionnel} et entre \textsf{[...]} permet de spécifier un formatage du résultat :
+	\begin{itemize}
+		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
+		\item \Cle{d} pour l'affichage de la fraction en mode \textsf{dfrac} ;
+		\item \Cle{dec} pour l'affichage du résultat en mode \texttt{décimal} (sans arrondi !) ;
+		\item \Cle{dec=k} pour l'affichage du résultat en mode \texttt{décimal} arrondi à $10^{-k}$ ;
+	\end{itemize}
+	\item le second argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice donnée par ses coefficients \textsf{a11,a12,...;a21,a22,...} (syntaxe héritée de \texttt{sympy}).
+\end{itemize}
+
+\begin{PresentationCode}{}
+%version classique
+Le dét. de $A=\begin{pNiceMatrix}1&2\\3&4\end{pNiceMatrix}$ est
+$\det(A)=\DetMatrice(1,2;3,4)$.
+\end{PresentationCode}
+
+\begin{PresentationCode}{}
+%version classique
+Le dét. de $A=\begin{pNiceMatrix}-1&{0,5}\\\frac12&4\end{pNiceMatrix}$ est
+$\det(A)=\DetMatrice[dec](-1,0.5;1/2,4)$.
+\end{PresentationCode}
+
+\begin{PresentationCode}{}
+%version classique
+Le dét. de $A=\begin{pNiceMatrix}-1&\frac13&4\\\frac13&4&-1\\-1&0&0\end{pNiceMatrix}$ est
+$\det(A) \approx \DetMatrice[dec=3](-1,1/3,4;1/3,4,-1;-1,0,0)$.
+\end{PresentationCode}
+
+\begin{PresentationCode}{}
+%version lua
+Le dé. de $A=\begin{pNiceMatrix}1&2\\3&4\end{pNiceMatrix}$ est
+$\det(A)=\DetMatriceLUA(1,2;3,4)$.
+\end{PresentationCode}
+
+\begin{PresentationCode}{}
+Le dét. de $A=\begin{pNiceMatrix}-1&{0,5}\\\frac12&4\end{pNiceMatrix}$ est
+$\det(A)=\DetMatriceLUA*[d](-1,0.5;1/2,4)$.\end{PresentationCode}
+
+\begin{PresentationCode}{}
+%version lua
+Le dét. de $A=\begin{pNiceMatrix}-1&\frac13&4\\\frac13&4&-1\\-1&0&0\end{pNiceMatrix}$ est
+$\det(A) \approx \DetMatriceLUA[dec=3](-1,1/3,4;1/3,4,-1;-1,0,0)$.
+\end{PresentationCode}
+
+\section{Inverse d'une matrice}
+
+\subsection{Introduction}
+
+La deuxième commande (matricielle) disponible est pour calculer l'éventuelle inverse d'une matrice :
+
+\begin{itemize}
+	\item \textbf{2x2} ou \textbf{3x3} pour le package \textit{classique} ;
+	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} pour le package \textit{lua}.
+\end{itemize}
+
+\begin{PresentationCode}{listing only}
+%version classique
+\MatriceInverse(*)[option de formatage]<options nicematrix>(matrice)
+
+%version lua
+\MatriceInverseLUA(*)[option de formatage]<options nicematrix>(matrice)
+\end{PresentationCode}
+
+\subsection{Utilisation}
+
+Concernant cette commande, qui est à insérer dans un environnement \textit{math} :
+
+\begin{itemize}
+	\item la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} avant l'éventuelle fraction ;
+	\item le premier argument, \textit{optionnel} et entre \textsf{[...]} permet de spécifier un formatage du résultat :
+	\begin{itemize}
+		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
+		\item \Cle{d} pour l'affichage de la fraction en mode \textsf{dfrac} ;
+		\item \Cle{dec} pour l'affichage du résultat en mode \texttt{décimal} (sans arrondi !) ;
+		\item \Cle{dec=k} pour l'affichage du résultat en mode \texttt{décimal} arrondi à $10^{-k}$ ;
+	\end{itemize}
+	\item le deuxième argument, \textit{optionnel} et entre \textsf{<...>} correspond aux \Cle{options} à passer à l'environnement \texttt{pNiceMatrix} ;
+	\item le troisième argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice donnée par ses coefficients \textsf{a11,a12,...;a21,a22,...} (syntaxe héritée de \texttt{sympy}).
+\end{itemize}
+
+À noter que si la matrice n'est pas inversible, le texte \texttt{Matrice non inversible} est affiché.
+
+\begin{PresentationCode}{}
+%version classique
+L'inverse de $A=\begin{pNiceMatrix}1&2\\3&4\end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverse<cell-space-limits=2pt>(1,2;3,4)$.
+\end{PresentationCode}
+
+\begin{PresentationCode}{}
+%version classique
+L'inverse de $A=\begin{pNiceMatrix}1&2&3\\4&5&6\\7&8&8\end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverse[n]<cell-space-limits=2pt>(1,2,3;4,5,6;7,8,8)$.
+\end{PresentationCode}
+
+\begin{PresentationCode}{}
+%version lua
+L'inverse de $A=\begin{pNiceMatrix}1&2\\3&4\end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverseLUA*[d]<cell-space-limits=2pt>(1,2;3,4)$.
+\end{PresentationCode}
+
+\begin{PresentationCode}{}
+%version lua
+L'inv. de $A=\begin{pNiceMatrix}1&2&3&4\\5&6&7&0\\1&1&1&1\\-2&-3&-5&-6\end{pNiceMatrix}$ est
+$A^{-1}=\MatriceInverseLUA*[n]<cell-space-limits=2pt>(1,2,3,4;5,6,7,0;1,1,1,1;-2,-3,-5,-6)$.
+\end{PresentationCode}
+
+\section{Résolution d'un système linéaire}
+
+\subsection{Introduction}
+
+La deuxième commande (matricielle) disponible est pour déterminer l'éventuelle solution d'un système linéaire  qui s'écrit matriciellement $A\times X=B$:
+
+\begin{itemize}
+	\item \textbf{2x2} ou \textbf{3x3} pour le package \textit{classique} ;
+	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} pour le package \textit{lua}.
+\end{itemize}
+
+\begin{PresentationCode}{listing only}
+%version classique
+\SolutionSysteme(*)[opt de formatage]<opts nicematrix>(matriceA)(matriceB)[opt Matrice]
+
+%version lua
+\SolutionSystemeLUA(*)[opt de formatage]<opts nicematrix>(matriceA)(matriceB)[opt Matrice]
+\end{PresentationCode}
+
+\subsection{Utilisation}
+
+Concernant cette commande, qui est à insérer dans un environnement \textit{math} :
+
+\begin{itemize}
+	\item la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} avant l'éventuelle fraction ;
+	\item le premier argument, \textit{optionnel} et entre \textsf{[...]} permet de spécifier un formatage du résultat :
+	\begin{itemize}
+		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
+		\item \Cle{d} pour l'affichage de la fraction en mode \textsf{dfrac} ;
+		\item \Cle{dec} pour l'affichage du résultat en mode \texttt{décimal} (sans arrondi !) ;
+		\item \Cle{dec=k} pour l'affichage du résultat en mode \texttt{décimal} arrondi à $10^{-k}$ ;
+	\end{itemize}
+	\item le deuxième argument, \textit{optionnel} et entre \textsf{<...>} correspond aux \Cle{options} à passer à l'environnement \texttt{pNiceMatrix} ;
+	\item le troisième argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice $A$ donnée par ses coefficients \textsf{a11,a12,...;a21,a22,...} (syntaxe héritée de \texttt{sympy}) ;
+	\item le quatrième argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice $B$ donnée par ses coefficients \textsf{b11;b21;...} (syntaxe héritée de \texttt{sympy}) ;
+	\item le dernier argument, \textit{optionnel} et entre \textsf{[...]}, permet -- grâce à \Cle{Matrice} -- de présenter le vecteur solution.
+\end{itemize}
+
+À noter que si la matrice n'est pas inversible, le texte \texttt{Matrice non inversible} est affiché.
+
+\begin{PresentationCode}{}
+%version classique
+La solution de $\systeme{3x+y-2z=-1,2x-y+z=4,x-y-2z=5}$ est $\mathcal{S}=%
+\left\lbrace \SolutionSysteme*[d](3,1,-2;2,-1,1;1,-1,-2)(-1,4,5) \right\rbrace$.\\
+\end{PresentationCode}
+
+\begin{PresentationCode}{}
+%version lua
+La solution de $\systeme{x+y+z=-1,3x+2y-z=6,-x-y+2z=-5}$ est $\mathcal{S}=%
+\left\lbrace \SolutionSystemeLUA(1,1,1;3,2,-1;-1,-1,2)(-1,6,-5) \right\rbrace$.
+\end{PresentationCode}
+
+\begin{PresentationCode}{}
+%version lua
+La solution de $\systeme[xyzt]{x+2y+3z+4t=-10,5x+6y+7z=0,x+y+z+t=4,-2x-3y-5z-6t=7}$
+est $\mathcal{S}=%
+\left\lbrace
+	\SolutionSystemeLUA%
+		[dec]<cell-space-limits=2pt>%
+		(1,2,3,4;5,6,7,0;1,1,1,1;-2,-3,-5,-6)(-10,0,4,7)%
+		[Matrice]
+\right\rbrace$.
+
+%pas de solution
+La solution de $\systeme{x+2y=-5,4x+8y=1}$ est $\mathcal{S}=%
+\left\lbrace \SolutionSystemeLUA(1,2;4,8)(-5,1) \right\rbrace$.
+\end{PresentationCode}
+
+\pagebreak
+
+\part{Historique}
+
+\verb|v0.1.0|~:~~~~Version initiale
+
+\end{document}

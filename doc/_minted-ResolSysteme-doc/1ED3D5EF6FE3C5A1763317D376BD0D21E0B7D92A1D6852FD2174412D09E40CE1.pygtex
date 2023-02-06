@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c}{\PYGZpc{}version classique}
+Le dét. de \PYG{l+s}{\PYGZdl{}}\PYG{n+nb}{A}\PYG{o}{=}\PYG{n+nv}{\PYGZbs{}begin}\PYG{n+nb}{\PYGZob{}pNiceMatrix\PYGZcb{}}\PYG{o}{\PYGZhy{}}\PYG{l+m}{1}\PYG{n+nb}{\PYGZam{}\PYGZob{}}\PYG{l+m}{0}\PYG{n+nb}{,}\PYG{l+m}{5}\PYG{n+nb}{\PYGZcb{}}\PYG{n+nv}{\PYGZbs{}\PYGZbs{}\PYGZbs{}frac}\PYG{l+m}{12}\PYG{n+nb}{\PYGZam{}}\PYG{l+m}{4}\PYG{n+nv}{\PYGZbs{}end}\PYG{n+nb}{\PYGZob{}pNiceMatrix\PYGZcb{}}\PYG{l+s}{\PYGZdl{}} est
+\PYG{l+s}{\PYGZdl{}}\PYG{n+nv}{\PYGZbs{}det}\PYG{o}{(}\PYG{n+nb}{A}\PYG{o}{)=}\PYG{n+nv}{\PYGZbs{}DetMatrice}\PYG{o}{[}\PYG{n+nb}{dec}\PYG{o}{](\PYGZhy{}}\PYG{l+m}{1}\PYG{n+nb}{,}\PYG{l+m}{0}\PYG{n+nb}{.}\PYG{l+m}{5}\PYG{n+nb}{;}\PYG{l+m}{1}\PYG{o}{/}\PYG{l+m}{2}\PYG{n+nb}{,}\PYG{l+m}{4}\PYG{o}{)}\PYG{l+s}{\PYGZdl{}}.
+\end{Verbatim}

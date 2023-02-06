@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c}{\PYGZpc{}version classique}
+\PYG{k}{\PYGZbs{}SolutionSysteme}(*)[opt de formatage]\PYGZlt{}opts nicematrix\PYGZgt{}(matriceA)(matriceB)[opt Matrice]
+
+\PYG{c}{\PYGZpc{}version lua}
+\PYG{k}{\PYGZbs{}SolutionSystemeLUA}(*)[opt de formatage]\PYGZlt{}opts nicematrix\PYGZgt{}(matriceA)(matriceB)[opt Matrice]
+\end{Verbatim}

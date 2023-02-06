@@ -1,0 +1,16 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c}{\PYGZpc{}sortie par défaut (fraction avec \PYGZhy{} sur numérateur)}
+\PYG{k}{\PYGZbs{}ConvVersFrac}\PYG{n+nb}{\PYGZob{}}\PYGZhy{}10+1/3*(\PYGZhy{}5/16)\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{}sortie avec \PYGZhy{} avant la fraction}
+\PYG{k}{\PYGZbs{}ConvVersFrac*}\PYG{n+nb}{\PYGZob{}}\PYGZhy{}10+1/3*(\PYGZhy{}5/16)\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{}sortie en displaystyle}
+\PYG{k}{\PYGZbs{}ConvVersFrac*}\PYG{n+na}{[d]}\PYG{n+nb}{\PYGZob{}}\PYGZhy{}10+1/3*(\PYGZhy{}5/16)\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{}sortie en décimal arrondi à 0,0001}
+\PYG{k}{\PYGZbs{}ConvVersFrac}\PYG{n+na}{[dec=4]}\PYG{n+nb}{\PYGZob{}}\PYGZhy{}10+1/3*(\PYGZhy{}5/16)\PYG{n+nb}{\PYGZcb{}}
+
+\PYG{c}{\PYGZpc{}entier correctement formaté}
+\PYG{k}{\PYGZbs{}ConvVersFrac}\PYG{n+nb}{\PYGZob{}}2+91/7\PYG{n+nb}{\PYGZcb{}}
+\end{Verbatim}
