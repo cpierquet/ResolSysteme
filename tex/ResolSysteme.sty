@@ -2,12 +2,13 @@
 % licence........: Released under the LaTeX Project Public License v1.3c or later, see http://www.latex-project.org/lppl.txtf
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{ResolSysteme}[2023/02/06 v0.1.0 Travailler sur un systeme lineaire avec xint ou lua]
+\ProvidesPackage{ResolSysteme}[2023/02/07 v0.1.1 Travailler sur un systeme lineaire avec xint ou pyluatex]
+% 0.1.1		Compatibilité avec pythontex + Correction d'un bug avec le séparateur ";"
 % 0.1.0		Version initiale
 
 %------Option(s)
-\newif\if@lua \@luafalse
-\DeclareOption{lua}{\@luatrue}
+\newif\if@pyluatex \@pyluatexfalse
+\DeclareOption{pyluatex}{\@pyluatextrue}
 \DeclareOption*{}
 \ProcessOptions\relax
 
@@ -21,54 +22,54 @@
 \RequirePackage{nicefrac}
 \RequirePackage{xstring}
 
-%-------Option lua pour les scripts python !
-\if@lua %package pyluatex à charger par l'utilisateur !
+%-------Option pyluatex pour les scripts python via pyluatex !
+\if@pyluatex %package pyluatex à charger par l'utilisateur !
 \begin{python}
-from sympy import *
-x = Symbol('x')
-y = Symbol('y')
-z = Symbol('z')
-t = Symbol('t')
+import sympy as sy
+x = sy.Symbol('x')
+y = sy.Symbol('y')
+z = sy.Symbol('z')
+t = sy.Symbol('t')
 
 def resol_systeme_QQ(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,u) :
-	solution=solve([a*x+b*y+c*z+d*t-e,f*x+g*y+h*z+i*t-j,k*x+l*y+m*z+n*t-o,p*x+q*y+r*z+s*t-u],[x,y,z,t])
+	solution=sy.solve([a*x+b*y+c*z+d*t-e,f*x+g*y+h*z+i*t-j,k*x+l*y+m*z+n*t-o,p*x+q*y+r*z+s*t-u],[x,y,z,t])
 	return solution
 
 def resol_systeme_TT(a,b,c,d,e,f,g,h,i,j,k,l) :
-	solution=solve([a*x+b*y+c*z-d,e*x+f*y+g*z-h,i*x+j*y+k*z-l],[x,y,z])
+	solution=sy.solve([a*x+b*y+c*z-d,e*x+f*y+g*z-h,i*x+j*y+k*z-l],[x,y,z])
 	return solution
 
 def resol_systeme_DD(a,b,c,d,e,f) :
-	solution=solve([a*x+b*y-c,d*x+e*y-f],[x,y])
+	solution=sy.solve([a*x+b*y-c,d*x+e*y-f],[x,y])
 	return solution
 
 def det_matrice_QQ(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p) :
-	MatTmp = Matrix(([a,b,c,d],[e,f,g,h],[i,j,k,l],[m,n,o,p]))
+	MatTmp = sy.Matrix(([a,b,c,d],[e,f,g,h],[i,j,k,l],[m,n,o,p]))
 	DetMatTmp = MatTmp.det()
 	return DetMatTmp
 
 def det_matrice_TT(a,b,c,d,e,f,g,h,i) :
-	MatTmp = Matrix(([a,b,c],[d,e,f],[g,h,i]))
+	MatTmp = sy.Matrix(([a,b,c],[d,e,f],[g,h,i]))
 	DetMatTmp = MatTmp.det()
 	return DetMatTmp
 
 def det_matrice_DD(a,b,c,d) :
-	MatTmp = Matrix(([a,b],[c,d]))
+	MatTmp = sy.Matrix(([a,b],[c,d]))
 	DetMatTmp = MatTmp.det()
 	return DetMatTmp
 
 def inverse_matrice_QQ(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p) :
-	MatTmp = Matrix(([a,b,c,d],[e,f,g,h],[i,j,k,l],[m,n,o,p]))
+	MatTmp = sy.Matrix(([a,b,c,d],[e,f,g,h],[i,j,k,l],[m,n,o,p]))
 	DetMatTmp = MatTmp.inv()
 	return DetMatTmp
 
 def inverse_matrice_DD(a,b,c,d) :
-	MatTmp = Matrix(([a,b],[c,d]))
+	MatTmp = sy.Matrix(([a,b],[c,d]))
 	InvMatTmp = MatTmp.inv()
 	return InvMatTmp
 
 def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
-	MatTmp = Matrix(([a,b,c],[d,e,f],[g,h,i]))
+	MatTmp = sy.Matrix(([a,b,c],[d,e,f],[g,h,i]))
 	InvMatTmp = MatTmp.inv()
 	return InvMatTmp
 
@@ -154,20 +155,20 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 	%4=matrice (,,;,,)
 	%---------------------
 	%lectures des matrices
-	\setsepchar{;/,}
-	\readlist*\MAMATRICEA{#4}
+	\setsepchar{§/,}%
+	\readlist*\MAMATRICEA{#4}%
 	\def\MatDim{\MAMATRICEAlen}%
 	%les coeffs de A et le déterminant et les coeff de l'inverse
 	\ifnum \MAMATRICEAlen=3
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[1,3]\MatC%
-		\itemtomacro\MAMATRICEA[2,1]\MatD%
-		\itemtomacro\MAMATRICEA[2,2]\MatE%
-		\itemtomacro\MAMATRICEA[2,3]\MatF%
-		\itemtomacro\MAMATRICEA[3,1]\MatG%
-		\itemtomacro\MAMATRICEA[3,2]\MatH%
-		\itemtomacro\MAMATRICEA[3,3]\MatI%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[1,3]\MatC
+		\itemtomacro\MAMATRICEA[2,1]\MatD
+		\itemtomacro\MAMATRICEA[2,2]\MatE
+		\itemtomacro\MAMATRICEA[2,3]\MatF
+		\itemtomacro\MAMATRICEA[3,1]\MatG
+		\itemtomacro\MAMATRICEA[3,2]\MatH
+		\itemtomacro\MAMATRICEA[3,3]\MatI
 		%le déterminant
 		\def\DETMATRICE{\xinteval{\MatA*\MatE*\MatI+\MatD*\MatH*\MatC+\MatB*\MatF*\MatG-\MatG*\MatE*\MatC-\MatD*\MatB*\MatI-\MatA*\MatH*\MatF}}%
 		%matrice inverse, si elle existe...
@@ -205,10 +206,10 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 			}%
 	\fi
 	\ifnum \MAMATRICEAlen=2
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[2,1]\MatC%
-		\itemtomacro\MAMATRICEA[2,2]\MatD%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[2,1]\MatC
+		\itemtomacro\MAMATRICEA[2,2]\MatD
 		%le déterminant
 		\def\DETMATRICE{\xinteval{\MatA*\MatD-\MatB*\MatC}}%
 		%matrice inverse, si elle existe...
@@ -242,28 +243,27 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 	%3=matrice (,,;,,)
 	%---------------------
 	%lectures des matrices
-	\setsepchar{;/,}
-	\readlist*\MAMATRICEA{#3}
-	\def\MatDim{\MAMATRICEAlen}%
+	\setsepchar{§/,}%
+	\readlist*\MAMATRICEA{#3}%
 	%les coeffs de A et le déterminant et les coeff de l'inverse
 	\ifnum \MAMATRICEAlen=3
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[1,3]\MatC%
-		\itemtomacro\MAMATRICEA[2,1]\MatD%
-		\itemtomacro\MAMATRICEA[2,2]\MatE%
-		\itemtomacro\MAMATRICEA[2,3]\MatF%
-		\itemtomacro\MAMATRICEA[3,1]\MatG%
-		\itemtomacro\MAMATRICEA[3,2]\MatH%
-		\itemtomacro\MAMATRICEA[3,3]\MatI%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[1,3]\MatC
+		\itemtomacro\MAMATRICEA[2,1]\MatD
+		\itemtomacro\MAMATRICEA[2,2]\MatE
+		\itemtomacro\MAMATRICEA[2,3]\MatF
+		\itemtomacro\MAMATRICEA[3,1]\MatG
+		\itemtomacro\MAMATRICEA[3,2]\MatH
+		\itemtomacro\MAMATRICEA[3,3]\MatI
 		%le déterminant
 		\def\DETMATRICE{\xinteval{\MatA*\MatE*\MatI+\MatD*\MatH*\MatC+\MatB*\MatF*\MatG-\MatG*\MatE*\MatC-\MatD*\MatB*\MatI-\MatA*\MatH*\MatF}}%
 	\fi
 	\ifnum \MAMATRICEAlen=2
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[2,1]\MatC%
-		\itemtomacro\MAMATRICEA[2,2]\MatD%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[2,1]\MatC
+		\itemtomacro\MAMATRICEA[2,2]\MatD
 		%le déterminant
 		\def\DETMATRICE{\xinteval{\MatA*\MatD-\MatB*\MatC}}%
 	\fi
@@ -285,28 +285,28 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 	%6=résultat sous forme d'une matrice
 	%---------------------
 	%lectures des matrices
-	\setsepchar{;/,}%
+	\setsepchar{§/,}%
 	\readlist*\MAMATRICEA{#4}%
 	\setsepchar{,}%
 	\readlist*\MAMATRICEB{#5}%
 	\def\MatDim{\MAMATRICEAlen}%
 	%les coeffs de A et le déterminant et les coeff de l'inverse
 	\ifnum \MAMATRICEAlen=3
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[1,3]\MatC%
-		\itemtomacro\MAMATRICEA[2,1]\MatD%
-		\itemtomacro\MAMATRICEA[2,2]\MatE%
-		\itemtomacro\MAMATRICEA[2,3]\MatF%
-		\itemtomacro\MAMATRICEA[3,1]\MatG%
-		\itemtomacro\MAMATRICEA[3,2]\MatH%
-		\itemtomacro\MAMATRICEA[3,3]\MatI%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[1,3]\MatC
+		\itemtomacro\MAMATRICEA[2,1]\MatD
+		\itemtomacro\MAMATRICEA[2,2]\MatE
+		\itemtomacro\MAMATRICEA[2,3]\MatF
+		\itemtomacro\MAMATRICEA[3,1]\MatG
+		\itemtomacro\MAMATRICEA[3,2]\MatH
+		\itemtomacro\MAMATRICEA[3,3]\MatI
 		%le déterminant
 		\def\DETMATRICE{\xinteval{\MatA*\MatE*\MatI+\MatD*\MatH*\MatC+\MatB*\MatF*\MatG-\MatG*\MatE*\MatC-\MatD*\MatB*\MatI-\MatA*\MatH*\MatF}}%
 		%les coeffs de B
-		\itemtomacro\MAMATRICEB[1]\MatBA%
-		\itemtomacro\MAMATRICEB[2]\MatBB%
-		\itemtomacro\MAMATRICEB[3]\MatBC%
+		\itemtomacro\MAMATRICEB[1]\MatBA
+		\itemtomacro\MAMATRICEB[2]\MatBB
+		\itemtomacro\MAMATRICEB[3]\MatBC
 		%matrice inverse, si elle existe...
 		\xintifboolexpr{\DETMATRICE == 0}%
 			{\text{Matrice non inversible}}%
@@ -346,15 +346,15 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 			}%
 	\fi
 	\ifnum \MAMATRICEAlen=2
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[2,1]\MatC%
-		\itemtomacro\MAMATRICEA[2,2]\MatD%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[2,1]\MatC
+		\itemtomacro\MAMATRICEA[2,2]\MatD
 		%le déterminant
 		\def\DETMATRICE{\xinteval{\MatA*\MatD-\MatB*\MatC}}%
 		%les coeffs de B
-		\itemtomacro\MAMATRICEB[1]\MatBA%
-		\itemtomacro\MAMATRICEB[2]\MatBB%
+		\itemtomacro\MAMATRICEB[1]\MatBA
+		\itemtomacro\MAMATRICEB[2]\MatBB
 		%matrice inverse, si elle existe...
 		\xintifboolexpr{\DETMATRICE == 0}%
 			{\text{Matrice non inversible}}%
@@ -388,43 +388,43 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 }
 
 %------Commandes via pyluatex
-\if@lua %package pyluatex à charger par l'utilisateur !
-\NewDocumentCommand\SolutionSystemeLUA{ s O{} D<>{} r() r() O{} }{%
+\if@pyluatex %package pyluatex à charger par l'utilisateur !
+\NewDocumentCommand\SolutionSystemePY{ s O{} D<>{} r() r() O{} }{%
 	%*=avec le moins devant
 	%2=Option Fraction
 	%3=matrice du système
 	%4=second membre
 	%5=option NiceMatrix
 	%6=résultat sous forme d'une matrice
+	%---------------------
 	%lectures des matrices
-	\setsepchar{;/,}%
+	\setsepchar{§/,}%
 	\readlist*\MAMATRICEA{#4}%
 	\setsepchar{,}%
 	\readlist*\MAMATRICEB{#5}%
-	\def\MatDim{\MAMATRICEAlen}%
 	%système QuatreQuatre
 	\ifnum \MAMATRICEAlen=4
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[1,3]\MatC%
-		\itemtomacro\MAMATRICEA[1,4]\MatD%
-		\itemtomacro\MAMATRICEA[2,1]\MatE%
-		\itemtomacro\MAMATRICEA[2,2]\MatF%
-		\itemtomacro\MAMATRICEA[2,3]\MatG%
-		\itemtomacro\MAMATRICEA[2,4]\MatH%
-		\itemtomacro\MAMATRICEA[3,1]\MatI%
-		\itemtomacro\MAMATRICEA[3,2]\MatJ%
-		\itemtomacro\MAMATRICEA[3,3]\MatK%
-		\itemtomacro\MAMATRICEA[3,4]\MatL%
-		\itemtomacro\MAMATRICEA[4,1]\MatM%
-		\itemtomacro\MAMATRICEA[4,2]\MatN%
-		\itemtomacro\MAMATRICEA[4,3]\MatO%
-		\itemtomacro\MAMATRICEA[4,4]\MatP%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[1,3]\MatC
+		\itemtomacro\MAMATRICEA[1,4]\MatD
+		\itemtomacro\MAMATRICEA[2,1]\MatE
+		\itemtomacro\MAMATRICEA[2,2]\MatF
+		\itemtomacro\MAMATRICEA[2,3]\MatG
+		\itemtomacro\MAMATRICEA[2,4]\MatH
+		\itemtomacro\MAMATRICEA[3,1]\MatI
+		\itemtomacro\MAMATRICEA[3,2]\MatJ
+		\itemtomacro\MAMATRICEA[3,3]\MatK
+		\itemtomacro\MAMATRICEA[3,4]\MatL
+		\itemtomacro\MAMATRICEA[4,1]\MatM
+		\itemtomacro\MAMATRICEA[4,2]\MatN
+		\itemtomacro\MAMATRICEA[4,3]\MatO
+		\itemtomacro\MAMATRICEA[4,4]\MatP
 		%les coeffs de B
-		\itemtomacro\MAMATRICEB[1]\MatBA%
-		\itemtomacro\MAMATRICEB[2]\MatBB%
-		\itemtomacro\MAMATRICEB[3]\MatBC%
-		\itemtomacro\MAMATRICEB[4]\MatBD%
+		\itemtomacro\MAMATRICEB[1]\MatBA
+		\itemtomacro\MAMATRICEB[2]\MatBB
+		\itemtomacro\MAMATRICEB[3]\MatBC
+		\itemtomacro\MAMATRICEB[4]\MatBD
 		%les solutions
 		\def\DETMATRICE{\xinteval{\py{det_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)}}}%
 		\xintifboolexpr{\DETMATRICE == 0}%
@@ -459,19 +459,19 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 	\fi
 	%système TroisTrois
 	\ifnum \MAMATRICEAlen=3
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[1,3]\MatC%
-		\itemtomacro\MAMATRICEA[2,1]\MatD%
-		\itemtomacro\MAMATRICEA[2,2]\MatE%
-		\itemtomacro\MAMATRICEA[2,3]\MatF%
-		\itemtomacro\MAMATRICEA[3,1]\MatG%
-		\itemtomacro\MAMATRICEA[3,2]\MatH%
-		\itemtomacro\MAMATRICEA[3,3]\MatI%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[1,3]\MatC
+		\itemtomacro\MAMATRICEA[2,1]\MatD
+		\itemtomacro\MAMATRICEA[2,2]\MatE
+		\itemtomacro\MAMATRICEA[2,3]\MatF
+		\itemtomacro\MAMATRICEA[3,1]\MatG
+		\itemtomacro\MAMATRICEA[3,2]\MatH
+		\itemtomacro\MAMATRICEA[3,3]\MatI
 		%les coeffs de B
-		\itemtomacro\MAMATRICEB[1]\MatBA%
-		\itemtomacro\MAMATRICEB[2]\MatBB%
-		\itemtomacro\MAMATRICEB[3]\MatBC%
+		\itemtomacro\MAMATRICEB[1]\MatBA
+		\itemtomacro\MAMATRICEB[2]\MatBB
+		\itemtomacro\MAMATRICEB[3]\MatBC
 		%les solutions
 		\def\DETMATRICE{\xinteval{\py{det_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)}}}%
 		\xintifboolexpr{\DETMATRICE == 0}%
@@ -503,13 +503,13 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 	\fi
 	%système DeuxDeux
 	\ifnum \MAMATRICEAlen=2
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[2,1]\MatC%
-		\itemtomacro\MAMATRICEA[2,2]\MatD%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[2,1]\MatC
+		\itemtomacro\MAMATRICEA[2,2]\MatD
 		%les coeffs de B
-		\itemtomacro\MAMATRICEB[1]\MatBA%
-		\itemtomacro\MAMATRICEB[2]\MatBB%
+		\itemtomacro\MAMATRICEB[1]\MatBA
+		\itemtomacro\MAMATRICEB[2]\MatBB
 		%solutions
 		\def\DETMATRICE{\xinteval{\py{det_matrice_DD(\MatA,\MatB,\MatC,\MatD)}}}%
 		\xintifboolexpr{\DETMATRICE == 0}%
@@ -538,34 +538,33 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 	\fi
 }
 
-\NewDocumentCommand\MatriceInverseLUA{ s O{} D<>{} r() }{%
+\NewDocumentCommand\MatriceInversePY{ s O{} D<>{} r() }{%
 	%*=fractions avec - devant
 	%2=options conversion
 	%3=options nicematrix
 	%4=matrice (,,;,,)
 	%---------------------
 	%lectures des matrices
-	\setsepchar{;/,}%
+	\setsepchar{§/,}%
 	\readlist*\MAMATRICEA{#4}%
-	\def\MatDim{\MAMATRICEAlen}%
 	%les coeffs de A et le déterminant et les coeff de l'inverse
 	\ifnum \MAMATRICEAlen=4
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[1,3]\MatC%
-		\itemtomacro\MAMATRICEA[1,4]\MatD%
-		\itemtomacro\MAMATRICEA[2,1]\MatE%
-		\itemtomacro\MAMATRICEA[2,2]\MatF%
-		\itemtomacro\MAMATRICEA[2,3]\MatG%
-		\itemtomacro\MAMATRICEA[2,4]\MatH%
-		\itemtomacro\MAMATRICEA[3,1]\MatI%
-		\itemtomacro\MAMATRICEA[3,2]\MatJ%
-		\itemtomacro\MAMATRICEA[3,3]\MatK%
-		\itemtomacro\MAMATRICEA[3,4]\MatL%
-		\itemtomacro\MAMATRICEA[4,1]\MatM%
-		\itemtomacro\MAMATRICEA[4,2]\MatN%
-		\itemtomacro\MAMATRICEA[4,3]\MatO%
-		\itemtomacro\MAMATRICEA[4,4]\MatP%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[1,3]\MatC
+		\itemtomacro\MAMATRICEA[1,4]\MatD
+		\itemtomacro\MAMATRICEA[2,1]\MatE
+		\itemtomacro\MAMATRICEA[2,2]\MatF
+		\itemtomacro\MAMATRICEA[2,3]\MatG
+		\itemtomacro\MAMATRICEA[2,4]\MatH
+		\itemtomacro\MAMATRICEA[3,1]\MatI
+		\itemtomacro\MAMATRICEA[3,2]\MatJ
+		\itemtomacro\MAMATRICEA[3,3]\MatK
+		\itemtomacro\MAMATRICEA[3,4]\MatL
+		\itemtomacro\MAMATRICEA[4,1]\MatM
+		\itemtomacro\MAMATRICEA[4,2]\MatN
+		\itemtomacro\MAMATRICEA[4,3]\MatO
+		\itemtomacro\MAMATRICEA[4,4]\MatP
 		%les solutions
 		\def\DETMATRICE{\xinteval{\py{det_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)}}}%
 		\xintifboolexpr{\DETMATRICE == 0}%
@@ -617,15 +616,15 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 		}%
 	\fi
 	\ifnum \MAMATRICEAlen=3
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[1,3]\MatC%
-		\itemtomacro\MAMATRICEA[2,1]\MatD%
-		\itemtomacro\MAMATRICEA[2,2]\MatE%
-		\itemtomacro\MAMATRICEA[2,3]\MatF%
-		\itemtomacro\MAMATRICEA[3,1]\MatG%
-		\itemtomacro\MAMATRICEA[3,2]\MatH%
-		\itemtomacro\MAMATRICEA[3,3]\MatI%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[1,3]\MatC
+		\itemtomacro\MAMATRICEA[2,1]\MatD
+		\itemtomacro\MAMATRICEA[2,2]\MatE
+		\itemtomacro\MAMATRICEA[2,3]\MatF
+		\itemtomacro\MAMATRICEA[3,1]\MatG
+		\itemtomacro\MAMATRICEA[3,2]\MatH
+		\itemtomacro\MAMATRICEA[3,3]\MatI
 		\def\DETMATRICE{\xinteval{\py{det_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)}}}%
 		\xintifboolexpr{\DETMATRICE == 0}%
 			{\text{Matrice non inversible}}%
@@ -661,10 +660,10 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 			}%
 	\fi
 	\ifnum \MAMATRICEAlen=2
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[2,1]\MatC%
-		\itemtomacro\MAMATRICEA[2,2]\MatD%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[2,1]\MatC
+		\itemtomacro\MAMATRICEA[2,2]\MatD
 		\def\DETMATRICE{\xinteval{\py{det_matrice_DD(\MatA,\MatB,\MatC,\MatD)}}}%
 		\xintifboolexpr{\DETMATRICE == 0}%
 			{\text{Matrice non inversible}}%
@@ -690,53 +689,53 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 	\fi
 }
 
-\NewDocumentCommand\DetMatriceLUA{ s O{} r() }{%
+\NewDocumentCommand\DetMatricePY{ s O{} r() }{%
 	%*=fractions avec - devant
 	%2=options conversion
 	%3=matrice (,,;,,)
 	%---------------------
 	%lectures des matrices
-	\setsepchar{;/,}%
+	\setsepchar{§/,}%
 	\readlist*\MAMATRICEA{#3}%
 	\def\MatDim{\MAMATRICEAlen}%
 	%les coeffs de A et le déterminant et les coeff de l'inverse
 	\ifnum \MAMATRICEAlen=4
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[1,3]\MatC%
-		\itemtomacro\MAMATRICEA[1,4]\MatD%
-		\itemtomacro\MAMATRICEA[2,1]\MatE%
-		\itemtomacro\MAMATRICEA[2,2]\MatF%
-		\itemtomacro\MAMATRICEA[2,3]\MatG%
-		\itemtomacro\MAMATRICEA[2,4]\MatH%
-		\itemtomacro\MAMATRICEA[3,1]\MatI%
-		\itemtomacro\MAMATRICEA[3,2]\MatJ%
-		\itemtomacro\MAMATRICEA[3,3]\MatK%
-		\itemtomacro\MAMATRICEA[3,4]\MatL%
-		\itemtomacro\MAMATRICEA[4,1]\MatM%
-		\itemtomacro\MAMATRICEA[4,2]\MatN%
-		\itemtomacro\MAMATRICEA[4,3]\MatO%
-		\itemtomacro\MAMATRICEA[4,4]\MatP%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[1,3]\MatC
+		\itemtomacro\MAMATRICEA[1,4]\MatD
+		\itemtomacro\MAMATRICEA[2,1]\MatE
+		\itemtomacro\MAMATRICEA[2,2]\MatF
+		\itemtomacro\MAMATRICEA[2,3]\MatG
+		\itemtomacro\MAMATRICEA[2,4]\MatH
+		\itemtomacro\MAMATRICEA[3,1]\MatI
+		\itemtomacro\MAMATRICEA[3,2]\MatJ
+		\itemtomacro\MAMATRICEA[3,3]\MatK
+		\itemtomacro\MAMATRICEA[3,4]\MatL
+		\itemtomacro\MAMATRICEA[4,1]\MatM
+		\itemtomacro\MAMATRICEA[4,2]\MatN
+		\itemtomacro\MAMATRICEA[4,3]\MatO
+		\itemtomacro\MAMATRICEA[4,4]\MatP
 		%les solutions
 		\def\DETMATRICE{\xinteval{\py{det_matrice_QQ(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI,\MatJ,\MatK,\MatL,\MatM,\MatN,\MatO,\MatP)}}}%
 	\fi
 	\ifnum \MAMATRICEAlen=3
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[1,3]\MatC%
-		\itemtomacro\MAMATRICEA[2,1]\MatD%
-		\itemtomacro\MAMATRICEA[2,2]\MatE%
-		\itemtomacro\MAMATRICEA[2,3]\MatF%
-		\itemtomacro\MAMATRICEA[3,1]\MatG%
-		\itemtomacro\MAMATRICEA[3,2]\MatH%
-		\itemtomacro\MAMATRICEA[3,3]\MatI%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[1,3]\MatC
+		\itemtomacro\MAMATRICEA[2,1]\MatD
+		\itemtomacro\MAMATRICEA[2,2]\MatE
+		\itemtomacro\MAMATRICEA[2,3]\MatF
+		\itemtomacro\MAMATRICEA[3,1]\MatG
+		\itemtomacro\MAMATRICEA[3,2]\MatH
+		\itemtomacro\MAMATRICEA[3,3]\MatI
 		\def\DETMATRICE{\xinteval{\py{det_matrice_TT(\MatA,\MatB,\MatC,\MatD,\MatE,\MatF,\MatG,\MatH,\MatI)}}}%
 	\fi
 	\ifnum \MAMATRICEAlen=2
-		\itemtomacro\MAMATRICEA[1,1]\MatA%
-		\itemtomacro\MAMATRICEA[1,2]\MatB%
-		\itemtomacro\MAMATRICEA[2,1]\MatC%
-		\itemtomacro\MAMATRICEA[2,2]\MatD%
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[2,1]\MatC
+		\itemtomacro\MAMATRICEA[2,2]\MatD
 		\def\DETMATRICE{\xinteval{\py{det_matrice_DD(\MatA,\MatB,\MatC,\MatD)}}}%
 	\fi
 	\IfBooleanTF{#1}%
@@ -747,7 +746,6 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 			\ConvVersFrac[#2]{\DETMATRICE}%
 		}%
 }
-
 \fi
 
 \endinput

@@ -3,15 +3,15 @@
 % arara: lualatex: {shell: yes, synctex: no, interaction: batchmode} if found('log', '(undefined references|Please rerun|Rerun to get)')
 
 \documentclass[a4paper,11pt]{article}
-\def\TPversion{0.1.0}
-\def\TPdate{6 Février 2023}
+\def\TPversion{0.1.1}
+\def\TPdate{7 Février 2023}
 \usepackage[executable=python.exe]{pyluatex}
 \usepackage[table,svgnames]{xcolor}
 \usepackage{amsmath,amssymb}
 \usepackage[bold-style=ISO,math-style=french]{unicode-math}
 \setmainfont{TeX Gyre Schola}
 \setmathfont{TeX Gyre Schola Math}
-\usepackage[lua]{ResolSysteme}
+\usepackage[pyluatex]{ResolSysteme}
 \usepackage{awesomebox}
 \usepackage{fontawesome5}
 \usepackage{systeme}
@@ -64,9 +64,24 @@
 		colframe=#1!75!black,colback=#1!15!white,%
 		,sharp corners=downhill,arc=12pt,%
 	},%
+	top=\baselineskip,%
 	fonttitle=\color{#1!90!black}\itshape\ttfamily\footnotesize,%
 	listing engine=minted,minted style=colorful,
 	minted language=tex,minted options={tabsize=4,fontsize=\small,autogobble},
+	#2
+}
+
+\NewTCBListing{PresentationCodePython}{ O{DarkRed} m }{%
+	sharp corners=downhill,enhanced,arc=12pt,skin=bicolor,%
+	colback=#1!1!white,colframe=#1!75!black,colbacklower=white,%
+	attach boxed title to top right={yshift=-\tcboxedtitleheight},title=Code Python,%
+	boxed title style={%
+		colframe=#1!75!black,colback=#1!15!white,%
+		,sharp corners=downhill,arc=12pt,%
+	},%
+	fonttitle=\color{#1!90!black}\itshape\ttfamily\footnotesize,%
+	listing engine=minted,minted style=colorful,
+	minted language=python,minted options={tabsize=2,fontsize=\footnotesize,autogobble},
 	#2
 }
 
@@ -95,7 +110,7 @@
 				\\
 				{\LARGE systèmes linéaires,} \\
 				\\
-				{\LARGE avec xint ou lua.} \\
+				{\LARGE avec xint ou pyluatex.} \\
 			\end{tabular}
 			
 			\bigskip
@@ -131,15 +146,15 @@
 \begin{center}
 	\begin{tcolorbox}[enhanced,colframe=ForestGreen,colback=lightgray!5,center,width=0.95\linewidth,drop fuzzy shadow=lightgray]
 	Le \textbf{déterminant} de $A=\begin{pNiceMatrix} -1&{0,5} \\ \frac12&4 \end{pNiceMatrix}$ est
-	$\det(A)=\DetMatrice[dec](-1,0.5;1/2,4)$.
+	$\det(A)=\DetMatrice[dec](-1,0.5 § 1/2,4)$.
 	
 	\medskip
 	
-	L'\textbf{inverse} de la matrice $A=\begin{pNiceMatrix} 1&2&3&4\\5&6&7&0\\1&1&1&1\\-2&-3&-5&-6 \end{pNiceMatrix}$ est $A^{-1}=\MatriceInverseLUA*[n]<cell-space-limits=2pt>(1,2,3,4;5,6,7,0;1,1,1,1;-2,-3,-5,-6)$.
+	L'\textbf{inverse} de la matrice $A=\begin{pNiceMatrix} 1&2&3&4\\5&6&7&0\\1&1&1&1\\-2&-3&-5&-6 \end{pNiceMatrix}$ est $A^{-1}=\MatriceInversePY*[n]<cell-space-limits=2pt>(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)$.
 	
 	\medskip
 	
-	La \textbf{solution} de $\systeme[xyzt]{y+z+t=1,x+z+t=-1,x+y+t=1,x+y+z=0}$ est $\mathcal{S}=\left\lbrace\SolutionSystemeLUA*[d](0,1,1,1;1,0,1,1;1,1,0,1;1,1,1,0)(1,-1,1,0)\right\rbrace$.
+	La \textbf{solution} de $\systeme[xyzt]{y+z+t=1,x+z+t=-1,x+y+t=1,x+y+z=0}$ est $\mathcal{S}=\left\lbrace\SolutionSystemePY*[d](0,1,1,1 § 1,0,1,1 § 1,1,0,1 § 1,1,1,0)(1,-1,1,0)\right\rbrace$.
 	\end{tcolorbox}
 \end{center}
 
@@ -179,14 +194,13 @@
 \subsection{Introduction}
 
 \begin{noteblock}
-L'idée est de \textit{proposer} des outils pour travailler sur des systèmes linéaires (de taille réduite !) en permettant :
+L'idée est de \textit{proposer} des outils pour travailler sur des systèmes linéaires (de taille réduite !) :
 
 \begin{itemize}
-	\item d'afficher la \textbf{solution} (si elle existe) ;
-	\item d'afficher le \textbf{déterminant} et l'éventuelle \textbf{inverse} de la matrice des coefficients.
+	\item en affichant la \textbf{solution} (si elle existe) ;
+	\item en affichant le \textbf{déterminant} et l'éventuelle \textbf{inverse} de la matrice des coefficients.
 \end{itemize}
-
-D'autres outils seront peut-être ajoutés ultérieurement.
+\vspace*{-\baselineskip}\leavevmode
 \end{noteblock}
 
 \begin{importantblock}
@@ -194,14 +208,18 @@ D'autres outils seront peut-être ajoutés ultérieurement.
 
 \begin{itemize}
 	\item via les packages \textsf{xint*} pour des formats \textbf{2x2} ou \textbf{3x3} ;
-	\item via \textsf{lua} et le package \textsf{pyluatex} (à charger manuellement du fait des options spécifiques) pour des formats \textbf{2x2}, \textbf{3x3} ou \textbf{4x4}.
+	\item via \textsf{python} et le package \textsf{pyluatex} (à charger manuellement du fait des options spécifiques) pour des formats \textbf{2x2}, \textbf{3x3} ou \textbf{4x4}.
 \end{itemize}
 
 Il n'est pas prévu -- pour le moment -- de travailler sur des matrices/systèmes plus grands.
 \end{importantblock}
 
 \begin{warningblock}
-L'utilisation de \textsf{lua} nécessite une compilation adaptée, à savoir en \hologo{LuaLaTeX} et en activant le mode \textsf{--shell-escape}. La méthode par \textsf{pyluatex} utilise le module \texttt{sympy}, qui doit donc être installée !
+L'utilisation de \textsf{pyluatex} nécessite une compilation adaptée, à savoir en \hologo{LuaLaTeX} et en activant le mode \textsf{--shell-escape}. 
+
+\smallskip
+
+La méthode par \textsf{python} utilise quoi qu'il en soit le module \texttt{sympy}, qui doit donc être installé !
 \end{warningblock}
 
 \subsection{Packages utilisés, choix de formatage}
@@ -215,7 +233,7 @@ Le package charge les packages suivantes :
 	\item \texttt{xstring} et \texttt{listofitems}.
 \end{itemize}
 
-Il est compatible avec les compilations usuelles en \textsf{latex}, \textsf{pdflatex}, \textsf{lualatex} (obligatoire pour le \textsf{lua} !!) ou \textsf{xelatex}.
+Il est compatible avec les compilations usuelles en \textsf{latex}, \textsf{pdflatex}, \textsf{lualatex} (obligatoire pour \textsf{pyluatex} !!) ou \textsf{xelatex}.
 \end{noteblock}
 
 \begin{importantblock}
@@ -229,9 +247,7 @@ L'affichage des matrices est gérée par le package \textsf{nicematrix}, et des 
 \subsection{Chargement du package, et option}
 
 \begin{importantblock}
-Le package peut donc se charger de deux manières différentes, suivant si l'utilisateur utilise le moteur \textsf{lua} ou non.
-
-Les commandes \textit{classiques} sont disponibles même si l'option \textsf{lua} est activée.
+Le package peut donc se charger de deux manières différentes, suivant si l'utilisateur utilise \textsf{python} ou non. Les commandes \textit{classiques} sont disponibles même si \textsf{python} est utilisé.
 \end{importantblock}
 
 \begin{PresentationCode}{listing only}
@@ -240,9 +256,9 @@ Les commandes \textit{classiques} sont disponibles même si l'option \textsf{lua
 \end{PresentationCode}
 
 \begin{PresentationCode}{listing only}
-%chargement du package pyluatex et du package avec [lua]
+%chargement du package pyluatex et du package avec [pyluatex]
 \usepackage[options]{pyluatex}
-\usepackage[lua]{ResolSysteme}
+\usepackage[pyluatex]{ResolSysteme}
 \end{PresentationCode}
 
 \pagebreak
@@ -272,34 +288,34 @@ Concernant cette commande, qui est dans un bloc \texttt{ensuremath} :
 	\begin{itemize}
 		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
 		\item \Cle{d} pour l'affichage de la fraction en mode \textsf{dfrac} ;
+		\item \Cle{n} pour l'affichage de la fraction en mode \textsf{nicefrac} ;
 		\item \Cle{dec} pour l'affichage du résultat en mode \texttt{décimal} (sans arrondi !) ;
 		\item \Cle{dec=k} pour l'affichage du résultat en mode \texttt{décimal} arrondi à $10^{-k}$ ;
 	\end{itemize}
 	\item le second argument, \textit{obligatoire}, est quant à lui, le calcul en syntaxe \textsf{xint}.
 \end{itemize}
+\vspace*{-\baselineskip}\leavevmode
 \end{tipblock}
 
 \begin{PresentationCode}{listing only}
-%sortie par défaut (fraction avec - sur numérateur)
-\ConvVersFrac{-10+1/3*(-5/16)}
+\ConvVersFrac{-10+1/3*(-5/16)}          %sortie par défaut (fraction avec - sur numérateur)
 
-%sortie avec - avant la fraction
-\ConvVersFrac*{-10+1/3*(-5/16)}
+\ConvVersFrac*{-10+1/3*(-5/16)}         %sortie avec - avant la fraction
 
-%sortie en displaystyle
-\ConvVersFrac*[d]{-10+1/3*(-5/16)}
+\ConvVersFrac*[d]{-10+1/3*(-5/16)}      %sortie en displaystyle
 
-%sortie en décimal arrondi à 0,0001
-\ConvVersFrac[dec=4]{-10+1/3*(-5/16)}
+\ConvVersFrac[n]{-10+1/3*(-5/16)}       %sortie en nicefrac
 
-%entier correctement formaté
-\ConvVersFrac{2+91/7}
+\ConvVersFrac[dec=4]{-10+1/3*(-5/16)}   %sortie en décimal arrondi à 0,0001
+
+\ConvVersFrac{2+91/7}                   %entier correctement formaté
 \end{PresentationCode}
 
 \begin{PresentationCode}{text only}
 \hfill\ConvVersFrac{-10+1/3*(-5/16)} \qquad
 \ConvVersFrac*{-10+1/3*(-5/16)} \qquad
 \ConvVersFrac*[d]{-10+1/3*(-5/16)} \qquad
+\ConvVersFrac[n]{-10+1/3*(-5/16)} \qquad
 \ConvVersFrac[dec=4]{-10+1/3*(-5/16)} \qquad
 \ConvVersFrac{2+91/7}\hfill~
 \end{PresentationCode}
@@ -331,14 +347,15 @@ La première commande (matricielle) disponible est pour calculer le déterminant
 	\item \textbf{2x2} ou \textbf{3x3} pour le package \textit{classique} ;
 	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} pour le package \textit{lua}.
 \end{itemize}
+\vspace*{-\baselineskip}\leavevmode
 \end{cautionblock}
 
 \begin{PresentationCode}{listing only}
 %version classique
 \DetMatrice(*)[option de formatage](matrice)
 
-%version lua
-\DetMatriceLUA(*)[option de formatage](matrice)
+%version python
+\DetMatricePY(*)[option de formatage](matrice)
 \end{PresentationCode}
 
 \subsection{Utilisation}
@@ -352,45 +369,47 @@ Concernant cette commande, qui est à insérer dans un environnement \textit{mat
 	\begin{itemize}
 		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
 		\item \Cle{d} pour l'affichage de la fraction en mode \textsf{dfrac} ;
+		\item \Cle{n} pour l'affichage de la fraction en mode \textsf{nicefrac} ;
 		\item \Cle{dec} pour l'affichage du résultat en mode \texttt{décimal} (sans arrondi !) ;
 		\item \Cle{dec=k} pour l'affichage du résultat en mode \texttt{décimal} arrondi à $10^{-k}$ ;
 	\end{itemize}
-	\item le second argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice donnée par ses coefficients \textsf{a11,a12,...;a21,a22,...} (syntaxe héritée de \texttt{sympy}).
+	\item le second argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice donnée par ses coefficients \textsf{a11,a12,... § a21,a22,...} (syntaxe \textit{héritée} de \texttt{sympy}).
 \end{itemize}
+\vspace*{-\baselineskip}\leavevmode
 \end{tipblock}
 
 \begin{PresentationCode}{}
 %version classique
 Le dét. de $A=\begin{pNiceMatrix}1&2\\3&4\end{pNiceMatrix}$ est
-$\det(A)=\DetMatrice(1,2;3,4)$.
+$\det(A)=\DetMatrice(1,2 § 3,4)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
 %version classique
 Le dét. de $A=\begin{pNiceMatrix}-1&{0,5}\\\frac12&4\end{pNiceMatrix}$ est
-$\det(A)=\DetMatrice[dec](-1,0.5;1/2,4)$.
+$\det(A)=\DetMatrice[dec](-1,0.5 § 1/2,4)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
 %version classique
 Le dét. de $A=\begin{pNiceMatrix}-1&\frac13&4\\\frac13&4&-1\\-1&0&0\end{pNiceMatrix}$ est
-$\det(A) \approx \DetMatrice[dec=3](-1,1/3,4;1/3,4,-1;-1,0,0)$.
+$\det(A) \approx \DetMatrice[dec=3](-1,1/3,4 § 1/3,4,-1 § -1,0,0)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version lua
+%version python
 Le dé. de $A=\begin{pNiceMatrix}1&2\\3&4\end{pNiceMatrix}$ est
-$\det(A)=\DetMatriceLUA(1,2;3,4)$.
+$\det(A)=\DetMatricePY(1,2 § 3,4)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
 Le dét. de $A=\begin{pNiceMatrix}-1&{0,5}\\\frac12&4\end{pNiceMatrix}$ est
-$\det(A)=\DetMatriceLUA*[d](-1,0.5;1/2,4)$.\end{PresentationCode}
+$\det(A)=\DetMatricePY*[d](-1,0.5 § 1/2,4)$.\end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version lua
+%version python
 Le dét. de $A=\begin{pNiceMatrix}-1&\frac13&4\\\frac13&4&-1\\-1&0&0\end{pNiceMatrix}$ est
-$\det(A) \approx \DetMatriceLUA[dec=3](-1,1/3,4;1/3,4,-1;-1,0,0)$.
+$\det(A) \approx \DetMatricePY[dec=3](-1,1/3,4 § 1/3,4,-1 § -1,0,0)$.
 \end{PresentationCode}
 
 \section{Inverse d'une matrice}
@@ -404,14 +423,15 @@ La deuxième commande (matricielle) disponible est pour calculer l'éventuelle i
 	\item \textbf{2x2} ou \textbf{3x3} pour le package \textit{classique} ;
 	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} pour le package \textit{lua}.
 \end{itemize}
+\vspace*{-\baselineskip}\leavevmode
 \end{cautionblock}
 
 \begin{PresentationCode}{listing only}
 %version classique
 \MatriceInverse(*)[option de formatage]<options nicematrix>(matrice)
 
-%version lua
-\MatriceInverseLUA(*)[option de formatage]<options nicematrix>(matrice)
+%version python
+\MatriceInversePY(*)[option de formatage]<options nicematrix>(matrice)
 \end{PresentationCode}
 
 \subsection{Utilisation}
@@ -425,11 +445,12 @@ Concernant cette commande, qui est à insérer dans un environnement \textit{mat
 	\begin{itemize}
 		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
 		\item \Cle{d} pour l'affichage de la fraction en mode \textsf{dfrac} ;
+		\item \Cle{n} pour l'affichage de la fraction en mode \textsf{nicefrac} ;
 		\item \Cle{dec} pour l'affichage du résultat en mode \texttt{décimal} (sans arrondi !) ;
 		\item \Cle{dec=k} pour l'affichage du résultat en mode \texttt{décimal} arrondi à $10^{-k}$ ;
 	\end{itemize}
 	\item le deuxième argument, \textit{optionnel} et entre \textsf{<...>} correspond aux \Cle{options} à passer à l'environnement \texttt{pNiceMatrix} ;
-	\item le troisième argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice donnée par ses coefficients \textsf{a11,a12,...;a21,a22,...} (syntaxe héritée de \texttt{sympy}).
+	\item le troisième argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice donnée par ses coefficients \textsf{a11,a12,... § a21,a22,...} (syntaxe héritée de \texttt{sympy}).
 \end{itemize}
 À noter que si la matrice n'est pas inversible, le texte \texttt{Matrice non inversible} est affiché.
 \end{tipblock}
@@ -437,25 +458,26 @@ Concernant cette commande, qui est à insérer dans un environnement \textit{mat
 \begin{PresentationCode}{}
 %version classique
 L'inverse de $A=\begin{pNiceMatrix}1&2\\3&4\end{pNiceMatrix}$ est
-$A^{-1}=\MatriceInverse<cell-space-limits=2pt>(1,2;3,4)$.
+$A^{-1}=\MatriceInverse<cell-space-limits=2pt>(1,2 § 3,4)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
 %version classique
 L'inverse de $A=\begin{pNiceMatrix}1&2&3\\4&5&6\\7&8&8\end{pNiceMatrix}$ est
-$A^{-1}=\MatriceInverse[n]<cell-space-limits=2pt>(1,2,3;4,5,6;7,8,8)$.
+$A^{-1}=\MatriceInverse[n]<cell-space-limits=2pt>(1,2,3 § 4,5,6 § 7,8,8)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version lua
+%version python
 L'inverse de $A=\begin{pNiceMatrix}1&2\\3&4\end{pNiceMatrix}$ est
-$A^{-1}=\MatriceInverseLUA*[d]<cell-space-limits=2pt>(1,2;3,4)$.
+$A^{-1}=\MatriceInversePY*[d]<cell-space-limits=2pt>(1,2 § 3,4)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version lua
+%version python
 L'inv. de $A=\begin{pNiceMatrix}1&2&3&4\\5&6&7&0\\1&1&1&1\\-2&-3&-5&-6\end{pNiceMatrix}$ est
-$A^{-1}=\MatriceInverseLUA*[n]<cell-space-limits=2pt>(1,2,3,4;5,6,7,0;1,1,1,1;-2,-3,-5,-6)$.
+$A^{-1}=
+\MatriceInversePY*[n]<cell-space-limits=2pt>(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)$.
 \end{PresentationCode}
 
 \section{Résolution d'un système linéaire}
@@ -469,14 +491,15 @@ La deuxième commande (matricielle) disponible est pour déterminer l'éventuell
 	\item \textbf{2x2} ou \textbf{3x3} pour le package \textit{classique} ;
 	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} pour le package \textit{lua}.
 \end{itemize}
+\vspace*{-\baselineskip}\leavevmode
 \end{cautionblock}
 
 \begin{PresentationCode}{listing only}
 %version classique
 \SolutionSysteme(*)[opt de formatage]<opts nicematrix>(matriceA)(matriceB)[opt Matrice]
 
-%version lua
-\SolutionSystemeLUA(*)[opt de formatage]<opts nicematrix>(matriceA)(matriceB)[opt Matrice]
+%version python
+\SolutionSystemePY(*)[opt de formatage]<opts nicematrix>(matriceA)(matriceB)[opt Matrice]
 \end{PresentationCode}
 
 \subsection{Utilisation}
@@ -490,12 +513,13 @@ Concernant cette commande, qui est à insérer dans un environnement \textit{mat
 	\begin{itemize}
 		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
 		\item \Cle{d} pour l'affichage de la fraction en mode \textsf{dfrac} ;
+		\item \Cle{n} pour l'affichage de la fraction en mode \textsf{nicefrac} ;
 		\item \Cle{dec} pour l'affichage du résultat en mode \texttt{décimal} (sans arrondi !) ;
 		\item \Cle{dec=k} pour l'affichage du résultat en mode \texttt{décimal} arrondi à $10^{-k}$ ;
 	\end{itemize}
 	\item le deuxième argument, \textit{optionnel} et entre \textsf{<...>} correspond aux \Cle{options} à passer à l'environnement \texttt{pNiceMatrix} ;
-	\item le troisième argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice $A$ donnée par ses coefficients \textsf{a11,a12,...;a21,a22,...} (syntaxe héritée de \texttt{sympy}) ;
-	\item le quatrième argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice $B$ donnée par ses coefficients \textsf{b11;b21;...} (syntaxe héritée de \texttt{sympy}) ;
+	\item le troisième argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice $A$ donnée par ses coefficients \textsf{a11,a12,... § a21,a22,...} (syntaxe héritée de \texttt{sympy}) ;
+	\item le quatrième argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice $B$ donnée par ses coefficients \textsf{b11,b21,...} (syntaxe héritée de \texttt{sympy}) ;
 	\item le dernier argument, \textit{optionnel} et entre \textsf{[...]}, permet -- grâce à \Cle{Matrice} -- de présenter le vecteur solution.
 \end{itemize}
 À noter que si la matrice n'est pas inversible, le texte \texttt{Matrice non inversible} est affiché.
@@ -504,23 +528,23 @@ Concernant cette commande, qui est à insérer dans un environnement \textit{mat
 \begin{PresentationCode}{}
 %version classique
 La solution de $\systeme{3x+y-2z=-1,2x-y+z=4,x-y-2z=5}$ est $\mathcal{S}=%
-\left\lbrace \SolutionSysteme*[d](3,1,-2;2,-1,1;1,-1,-2)(-1,4,5) \right\rbrace$.\\
+\left\lbrace \SolutionSysteme*[d](3,1,-2 § 2,-1,1 § 1,-1,-2)(-1,4,5) \right\rbrace$.\\
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version lua
+%version python
 La solution de $\systeme{x+y+z=-1,3x+2y-z=6,-x-y+2z=-5}$ est $\mathcal{S}=%
-\left\lbrace \SolutionSystemeLUA(1,1,1;3,2,-1;-1,-1,2)(-1,6,-5) \right\rbrace$.
+\left\lbrace \SolutionSystemePY(1,1,1 § 3,2,-1 § -1,-1,2)(-1,6,-5) \right\rbrace$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version lua
+%version python
 La solution de $\systeme[xyzt]{x+2y+3z+4t=-10,5x+6y+7z=0,x+y+z+t=4,-2x-3y-5z-6t=7}$
 est $\mathcal{S}=%
 \left\lbrace
-	\SolutionSystemeLUA%
+	\SolutionSystemePY%
 		[dec]<cell-space-limits=2pt>%
-		(1,2,3,4;5,6,7,0;1,1,1,1;-2,-3,-5,-6)(-10,0,4,7)%
+		(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)(-10,0,4,7)%
 		[Matrice]
 \right\rbrace$.
 \end{PresentationCode}
@@ -528,12 +552,74 @@ est $\mathcal{S}=%
 \begin{PresentationCode}{}
 %pas de solution
 La solution de $\systeme{x+2y=-5,4x+8y=1}$ est $\mathcal{S}=%
-\left\lbrace \SolutionSystemeLUA(1,2;4,8)(-5,1) \right\rbrace$.
+\left\lbrace \SolutionSystemePY(1,2 § 4,8)(-5,1) \right\rbrace$.
 \end{PresentationCode}
 
 \pagebreak
 
+\part{Fonctions python utilisées}
+
+\begin{cautionblock}
+Les fonctions utilisées par les packages \textsf{pyluatex} ou \textsf{pythontex} sont données ci-dessous.
+
+Elles sont accessibles en \textit{natif} une fois l'option \textsf{lua} activée, grâce notamment à la macro \texttt{\textbackslash py}.
+\end{cautionblock}
+
+\begin{PresentationCodePython}{listing only}
+import sympy as sy
+x = sy.Symbol('x')
+y = sy.Symbol('y')
+z = sy.Symbol('z')
+t = sy.Symbol('t')
+
+def resol_systeme_QQ(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,u) :
+	solution=sy.solve([a*x+b*y+c*z+d*t-e,f*x+g*y+h*z+i*t-j,k*x+l*y+m*z+n*t-o,p*x+q*y+r*z+s*t-u],[x,y,z,t])
+	return solution
+
+def resol_systeme_TT(a,b,c,d,e,f,g,h,i,j,k,l) :
+	solution=sy.solve([a*x+b*y+c*z-d,e*x+f*y+g*z-h,i*x+j*y+k*z-l],[x,y,z])
+	return solution
+
+def resol_systeme_DD(a,b,c,d,e,f) :
+	solution=sy.solve([a*x+b*y-c,d*x+e*y-f],[x,y])
+	return solution
+
+def det_matrice_QQ(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p) :
+	MatTmp = sy.Matrix(([a,b,c,d],[e,f,g,h],[i,j,k,l],[m,n,o,p]))
+	DetMatTmp = MatTmp.det()
+	return DetMatTmp
+
+def det_matrice_TT(a,b,c,d,e,f,g,h,i) :
+	MatTmp = sy.Matrix(([a,b,c],[d,e,f],[g,h,i]))
+	DetMatTmp = MatTmp.det()
+	return DetMatTmp
+
+def det_matrice_DD(a,b,c,d) :
+	MatTmp = sy.Matrix(([a,b],[c,d]))
+	DetMatTmp = MatTmp.det()
+	return DetMatTmp
+
+def inverse_matrice_QQ(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p) :
+	MatTmp = sy.Matrix(([a,b,c,d],[e,f,g,h],[i,j,k,l],[m,n,o,p]))
+	DetMatTmp = MatTmp.inv()
+	return DetMatTmp
+
+def inverse_matrice_DD(a,b,c,d) :
+	MatTmp = sy.Matrix(([a,b],[c,d]))
+	InvMatTmp = MatTmp.inv()
+	return InvMatTmp
+
+def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
+	MatTmp = sy.Matrix(([a,b,c],[d,e,f],[g,h,i]))
+	InvMatTmp = MatTmp.inv()
+	return InvMatTmp
+\end{PresentationCodePython}
+
+\pagebreak
+
 \part{Historique}
+
+\verb|v0.1.1|~:~~~~Correction d'un bug avec le caractère \og ; \fg{}
 
 \verb|v0.1.0|~:~~~~Version initiale
 
