@@ -3,8 +3,8 @@
 % arara: lualatex: {shell: yes, synctex: no, interaction: batchmode} if found('log', '(undefined references|Please rerun|Rerun to get)')
 
 \documentclass[a4paper,11pt]{article}
-\def\TPversion{0.1.1}
-\def\TPdate{7 Février 2023}
+\def\TPversion{0.1.2}
+\def\TPdate{8 Février 2023}
 \usepackage[executable=python.exe]{pyluatex}
 \usepackage[table,svgnames]{xcolor}
 \usepackage{amsmath,amssymb}
@@ -133,7 +133,11 @@
 
 \vspace{0.25cm}
 
-{$\blacktriangleright$~~Des commandes pour travailler sur des matrices carrées (2x2, 3x3 ou 4x4).}
+{$\blacktriangleright$~~Une commande pour afficher une matrice carrée (2x2, 3x3 ou 4x4) avec la syntaxe du package.}
+
+\smallskip
+
+{$\blacktriangleright$~~Des commandes pour calculer le déterminant et l'inverse de matrices carrées (2x2, 3x3 ou 4x4).}
 
 \smallskip
 
@@ -145,7 +149,7 @@
 
 \begin{center}
 	\begin{tcolorbox}[enhanced,colframe=ForestGreen,colback=lightgray!5,center,width=0.95\linewidth,drop fuzzy shadow=lightgray]
-	Le \textbf{déterminant} de $A=\begin{pNiceMatrix} -1&{0,5} \\ \frac12&4 \end{pNiceMatrix}$ est
+	Le \textbf{déterminant} de $A=\begin{pNiceMatrix} -1&\frac12 \\ \frac12&4 \end{pNiceMatrix}$ est
 	$\det(A)=\DetMatrice[dec](-1,0.5 § 1/2,4)$.
 	
 	\medskip
@@ -162,7 +166,7 @@
 
 %\hfill{}\textit{Merci aux membres du groupe \faFacebook{} du \og Coin \LaTeX{} \fg{} pour leur aide et leurs idées !}
 
-%\hfill{}\textit{Merci à Denis Bitouzé et à Patrick Bideault pour leurs retours et idées !}
+\hfill{}\textit{Merci à Denis Bitouzé pour leurs retours et idées !}
 
 \vfill
 
@@ -336,12 +340,65 @@ Les \textit{transformations} en fraction devraient pouvoir fonctionner avec des 
 
 \pagebreak
 
+\section{Affichage d'une matrice}
+
+\subsection{La commande}
+
+\begin{cautionblock}
+La première commande (matricielle) est dédiée à l'affichage d'une matrice \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} :
+
+\begin{itemize}
+	\item en saisissant les coefficients via une syntaxe propre au package (l'affichage est géré en interne par \textsf{nicematrix}) ;
+	\item en caclulant et convertissant éventuellement les coefficients sous forme de fraction (grâce à la commande précédente !).
+\end{itemize}
+\vspace*{-\baselineskip}\leavevmode
+\end{cautionblock}
+
+\begin{PresentationCode}{listing only}
+%commande disponible avec les deux versions, pyluatex ou non
+\AffMatrice(*)[option de formatage](matrice)
+\end{PresentationCode}
+
+\subsection{Utilisation}
+
+\begin{tipblock}
+Concernant cette commande, qui est à insérer dans un environnement \textit{math} :
+
+\begin{itemize}
+	\item la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} avant l'éventuelle fraction ;
+	\item le premier argument, \textit{optionnel} et entre \textsf{[...]} permet de spécifier un formatage du résultat :
+	\begin{itemize}
+		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
+		\item \Cle{d} pour l'affichage de la fraction en mode \textsf{dfrac} ;
+		\item \Cle{n} pour l'affichage de la fraction en mode \textsf{nicefrac} ;
+		\item \Cle{dec} pour l'affichage du résultat en mode \texttt{décimal} (sans arrondi !) ;
+		\item \Cle{dec=k} pour l'affichage du résultat en mode \texttt{décimal} arrondi à $10^{-k}$ ;
+	\end{itemize}
+	\item le deuxième argument, \textit{optionnel} et entre \textsf{<...>} correspond aux \Cle{options} à passer à l'environnement \texttt{pNiceMatrix} ;
+	\item le troisième argument, \textit{obligatoire} et entre \textsf{(...)}, est quant à lui, la matrice donnée par ses coefficients \textsf{a11,a12,... § a21,a22,...} (syntaxe héritée de \texttt{sympy}).
+\end{itemize}
+\vspace*{-\baselineskip}\leavevmode
+\end{tipblock}
+
+\begin{PresentationCode}{}
+On considère les matrices $A=\AffMatrice(1,2 § 3,4)$
+et $B=\AffMatrice[n](-1,1/3,4 § 1/3,4,-1 § -1,0,0)$
+et $C=\AffMatrice(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)$.
+\end{PresentationCode}
+
+\begin{PresentationCode}{}
+On considère la matrice
+$M=\AffMatrice*[d]<cell-space-limits=2pt>(1+1/4,0,3+4/5 § 0,1,-5/3 § 1/2,0.45,6/7)$.
+\end{PresentationCode}
+
+\pagebreak
+
 \section{Calcul de déterminant}
 
 \subsection{Introduction}
 
 \begin{cautionblock}
-La première commande (matricielle) disponible est pour calculer le déterminant d'une matrice :
+La deuxième commande (matricielle) disponible est pour calculer le déterminant d'une matrice :
 
 \begin{itemize}
 	\item \textbf{2x2} ou \textbf{3x3} pour le package \textit{classique} ;
@@ -380,35 +437,35 @@ Concernant cette commande, qui est à insérer dans un environnement \textit{mat
 
 \begin{PresentationCode}{}
 %version classique
-Le dét. de $A=\begin{pNiceMatrix}1&2\\3&4\end{pNiceMatrix}$ est
+Le dét. de $A=\AffMatrice(1,2 § 3,4)$ est
 $\det(A)=\DetMatrice(1,2 § 3,4)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
 %version classique
-Le dét. de $A=\begin{pNiceMatrix}-1&{0,5}\\\frac12&4\end{pNiceMatrix}$ est
+Le dét. de $A=\AffMatrice[dec](-1,0.5 § 1/2,4)$ est
 $\det(A)=\DetMatrice[dec](-1,0.5 § 1/2,4)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
 %version classique
-Le dét. de $A=\begin{pNiceMatrix}-1&\frac13&4\\\frac13&4&-1\\-1&0&0\end{pNiceMatrix}$ est
+Le dét. de $A=\AffMatrice*[t](-1,1/3,4 § 1/3,4,-1 § -1,0,0)$ est
 $\det(A) \approx \DetMatrice[dec=3](-1,1/3,4 § 1/3,4,-1 § -1,0,0)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
 %version python
-Le dé. de $A=\begin{pNiceMatrix}1&2\\3&4\end{pNiceMatrix}$ est
+Le dé. de $A=\AffMatrice(1,2 § 3,4)$ est
 $\det(A)=\DetMatricePY(1,2 § 3,4)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-Le dét. de $A=\begin{pNiceMatrix}-1&{0,5}\\\frac12&4\end{pNiceMatrix}$ est
+Le dét. de $A=\AffMatrice[dec](-1,0.5 § 1/2,4)$ est
 $\det(A)=\DetMatricePY*[d](-1,0.5 § 1/2,4)$.\end{PresentationCode}
 
 \begin{PresentationCode}{}
 %version python
-Le dét. de $A=\begin{pNiceMatrix}-1&\frac13&4\\\frac13&4&-1\\-1&0&0\end{pNiceMatrix}$ est
+Le dét. de $A=\AffMatrice(-1,1/3,4 § 1/3,4,-1 § -1,0,0)$ est
 $\det(A) \approx \DetMatricePY[dec=3](-1,1/3,4 § 1/3,4,-1 § -1,0,0)$.
 \end{PresentationCode}
 
@@ -417,7 +474,7 @@ $\det(A) \approx \DetMatricePY[dec=3](-1,1/3,4 § 1/3,4,-1 § -1,0,0)$.
 \subsection{Introduction}
 
 \begin{cautionblock}
-La deuxième commande (matricielle) disponible est pour calculer l'éventuelle inverse d'une matrice :
+La troisième commande (matricielle) disponible est pour calculer l'éventuelle inverse d'une matrice :
 
 \begin{itemize}
 	\item \textbf{2x2} ou \textbf{3x3} pour le package \textit{classique} ;
@@ -457,25 +514,25 @@ Concernant cette commande, qui est à insérer dans un environnement \textit{mat
 
 \begin{PresentationCode}{}
 %version classique
-L'inverse de $A=\begin{pNiceMatrix}1&2\\3&4\end{pNiceMatrix}$ est
+L'inverse de $A=\AffMatrice(1,2 § 3,4)$ est
 $A^{-1}=\MatriceInverse<cell-space-limits=2pt>(1,2 § 3,4)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
 %version classique
-L'inverse de $A=\begin{pNiceMatrix}1&2&3\\4&5&6\\7&8&8\end{pNiceMatrix}$ est
+L'inverse de $A=\AffMatrice(1,2,3 § 4,5,6 § 7,8,8)$ est
 $A^{-1}=\MatriceInverse[n]<cell-space-limits=2pt>(1,2,3 § 4,5,6 § 7,8,8)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
 %version python
-L'inverse de $A=\begin{pNiceMatrix}1&2\\3&4\end{pNiceMatrix}$ est
+L'inverse de $A=\AffMatrice(1,2 § 3,4)$ est
 $A^{-1}=\MatriceInversePY*[d]<cell-space-limits=2pt>(1,2 § 3,4)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
 %version python
-L'inv. de $A=\begin{pNiceMatrix}1&2&3&4\\5&6&7&0\\1&1&1&1\\-2&-3&-5&-6\end{pNiceMatrix}$ est
+L'inv. de $A=\AffMatrice(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)$ est
 $A^{-1}=
 \MatriceInversePY*[n]<cell-space-limits=2pt>(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)$.
 \end{PresentationCode}
@@ -618,6 +675,8 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 \pagebreak
 
 \part{Historique}
+
+\verb|v0.1.2|~:~~~~Ajout d'une commande d'affichage (formaté) d'une matrice 2x2, 3x3 ou 4x4
 
 \verb|v0.1.1|~:~~~~Correction d'un bug avec le caractère \og ; \fg{}
 

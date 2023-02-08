@@ -2,7 +2,8 @@
 % licence........: Released under the LaTeX Project Public License v1.3c or later, see http://www.latex-project.org/lppl.txtf
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{ResolSysteme}[2023/02/07 v0.1.1 Travailler sur un systeme lineaire avec xint ou pyluatex]
+\ProvidesPackage{ResolSysteme}[2023/02/08 v0.1.2 Travailler sur un systeme lineaire avec xint ou pyluatex]
+% 0.1.2		Ajout pour afficher une matrice, à l'aide d'une syntaxe similaire aux autres commandes
 % 0.1.1		Correction d'un bug avec le séparateur ";"
 % 0.1.0		Version initiale
 
@@ -145,6 +146,148 @@ def inverse_matrice_TT(a,b,c,d,e,f,g,h,i) :
 	}{%si non := entier
 		\num{\calculargument}%on affiche l'entier, avec le package siunitx
 	}%
+}
+
+%------Affichage d'une matrice classique, 2x2 ou 3x3 ou 4x4
+\NewDocumentCommand\AffMatrice{ s O{} D<>{} r() }{%
+	%*=fractions avec - devant
+	%2=options conversion
+	%3=options nicematrix
+	%4=matrice (,,;,,)
+	%---------------------
+	%lectures des matrices
+	\setsepchar{§/,}%
+	\readlist*\MAMATRICEA{#4}%
+	%les coeffs de A et le déterminant et les coeff de l'inverse
+	\ifnum \MAMATRICEAlen=3
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[1,3]\MatC
+		\itemtomacro\MAMATRICEA[2,1]\MatD
+		\itemtomacro\MAMATRICEA[2,2]\MatE
+		\itemtomacro\MAMATRICEA[2,3]\MatF
+		\itemtomacro\MAMATRICEA[3,1]\MatG
+		\itemtomacro\MAMATRICEA[3,2]\MatH
+		\itemtomacro\MAMATRICEA[3,3]\MatI
+		%les conversions
+		\IfBooleanTF{#1}%
+			{%
+				\def\MatAffA{\ConvVersFrac*[#2]{\MatA}}%
+				\def\MatAffB{\ConvVersFrac*[#2]{\MatB}}%
+				\def\MatAffC{\ConvVersFrac*[#2]{\MatC}}%
+				\def\MatAffD{\ConvVersFrac*[#2]{\MatD}}%
+				\def\MatAffE{\ConvVersFrac*[#2]{\MatE}}%
+				\def\MatAffF{\ConvVersFrac*[#2]{\MatF}}%
+				\def\MatAffG{\ConvVersFrac*[#2]{\MatG}}%
+				\def\MatAffH{\ConvVersFrac*[#2]{\MatH}}%
+				\def\MatAffI{\ConvVersFrac*[#2]{\MatI}}%
+			}%
+			{%
+				\def\MatAffA{\ConvVersFrac[#2]{\MatA}}%
+				\def\MatAffB{\ConvVersFrac[#2]{\MatB}}%
+				\def\MatAffC{\ConvVersFrac[#2]{\MatC}}%
+				\def\MatAffD{\ConvVersFrac[#2]{\MatD}}%
+				\def\MatAffE{\ConvVersFrac[#2]{\MatE}}%
+				\def\MatAffF{\ConvVersFrac[#2]{\MatF}}%
+				\def\MatAffG{\ConvVersFrac[#2]{\MatG}}%
+				\def\MatAffH{\ConvVersFrac[#2]{\MatH}}%
+				\def\MatAffI{\ConvVersFrac[#2]{\MatI}}%
+			}%
+		%l'affichage
+		\begin{pNiceMatrix}[#3]
+			{\MatAffA}&{\MatAffB}&{\MatAffC} \\
+			{\MatAffD}&{\MatAffE}&{\MatAffF} \\
+			{\MatAffG}&{\MatAffH}&{\MatAffI}
+		\end{pNiceMatrix}%
+	\fi
+	\ifnum \MAMATRICEAlen=2
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[2,1]\MatC
+		\itemtomacro\MAMATRICEA[2,2]\MatD
+		%les conversions
+		\IfBooleanTF{#1}%
+			{%
+				\def\MatAffA{\ConvVersFrac*[#2]{\MatA}}%
+				\def\MatAffB{\ConvVersFrac*[#2]{\MatB}}%
+				\def\MatAffC{\ConvVersFrac*[#2]{\MatC}}%
+				\def\MatAffD{\ConvVersFrac*[#2]{\MatD}}%
+			}%
+			{%
+				\def\MatAffA{\ConvVersFrac[#2]{\MatA}}%
+				\def\MatAffB{\ConvVersFrac[#2]{\MatB}}%
+				\def\MatAffC{\ConvVersFrac[#2]{\MatC}}%
+				\def\MatAffD{\ConvVersFrac[#2]{\MatD}}%
+			}%
+		%l'affichage
+		\begin{pNiceMatrix}[#3]
+			{\MatAffA}&{\MatAffB} \\
+			{\MatAffC}&{\MatAffD}
+		\end{pNiceMatrix}%
+	\fi
+	\ifnum \MAMATRICEAlen=4
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[1,3]\MatC
+		\itemtomacro\MAMATRICEA[1,4]\MatD
+		\itemtomacro\MAMATRICEA[2,1]\MatE
+		\itemtomacro\MAMATRICEA[2,2]\MatF
+		\itemtomacro\MAMATRICEA[2,3]\MatG
+		\itemtomacro\MAMATRICEA[2,4]\MatH
+		\itemtomacro\MAMATRICEA[3,1]\MatI
+		\itemtomacro\MAMATRICEA[3,2]\MatJ
+		\itemtomacro\MAMATRICEA[3,3]\MatK
+		\itemtomacro\MAMATRICEA[3,4]\MatL
+		\itemtomacro\MAMATRICEA[4,1]\MatM
+		\itemtomacro\MAMATRICEA[4,2]\MatN
+		\itemtomacro\MAMATRICEA[4,3]\MatO
+		\itemtomacro\MAMATRICEA[4,4]\MatP
+		%les conversions
+		\IfBooleanTF{#1}%
+			{%
+				\def\MatAffA{\ConvVersFrac*[#2]{\MatA}}%
+				\def\MatAffB{\ConvVersFrac*[#2]{\MatB}}%
+				\def\MatAffC{\ConvVersFrac*[#2]{\MatC}}%
+				\def\MatAffD{\ConvVersFrac*[#2]{\MatD}}%
+				\def\MatAffE{\ConvVersFrac*[#2]{\MatE}}%
+				\def\MatAffF{\ConvVersFrac*[#2]{\MatF}}%
+				\def\MatAffG{\ConvVersFrac*[#2]{\MatG}}%
+				\def\MatAffH{\ConvVersFrac*[#2]{\MatH}}%
+				\def\MatAffI{\ConvVersFrac*[#2]{\MatI}}%
+				\def\MatAffJ{\ConvVersFrac*[#2]{\MatJ}}%
+				\def\MatAffK{\ConvVersFrac*[#2]{\MatK}}%
+				\def\MatAffL{\ConvVersFrac*[#2]{\MatL}}%
+				\def\MatAffM{\ConvVersFrac*[#2]{\MatM}}%
+				\def\MatAffN{\ConvVersFrac*[#2]{\MatN}}%
+				\def\MatAffO{\ConvVersFrac*[#2]{\MatO}}%
+				\def\MatAffP{\ConvVersFrac*[#2]{\MatP}}%
+			}%
+			{%
+				\def\MatAffA{\ConvVersFrac[#2]{\MatA}}%
+				\def\MatAffB{\ConvVersFrac[#2]{\MatB}}%
+				\def\MatAffC{\ConvVersFrac[#2]{\MatC}}%
+				\def\MatAffD{\ConvVersFrac[#2]{\MatD}}%
+				\def\MatAffE{\ConvVersFrac[#2]{\MatE}}%
+				\def\MatAffF{\ConvVersFrac[#2]{\MatF}}%
+				\def\MatAffG{\ConvVersFrac[#2]{\MatG}}%
+				\def\MatAffH{\ConvVersFrac[#2]{\MatH}}%
+				\def\MatAffI{\ConvVersFrac[#2]{\MatI}}%
+				\def\MatAffJ{\ConvVersFrac[#2]{\MatJ}}%
+				\def\MatAffK{\ConvVersFrac[#2]{\MatK}}%
+				\def\MatAffL{\ConvVersFrac[#2]{\MatL}}%
+				\def\MatAffM{\ConvVersFrac[#2]{\MatM}}%
+				\def\MatAffN{\ConvVersFrac[#2]{\MatN}}%
+				\def\MatAffO{\ConvVersFrac[#2]{\MatO}}%
+				\def\MatAffP{\ConvVersFrac[#2]{\MatP}}%
+			}%
+		%l'affichage
+		\begin{pNiceMatrix}[#3]
+			{\MatAffA} & {\MatAffB} & {\MatAffC} & {\MatAffD} \\
+			{\MatAffE} & {\MatAffF} & {\MatAffG} & {\MatAffH} \\
+			{\MatAffI} & {\MatAffJ} & {\MatAffK} & {\MatAffL} \\
+			{\MatAffM} & {\MatAffN} & {\MatAffO} & {\MatAffP} \\
+			\end{pNiceMatrix}%
+	\fi
 }
 
 %------Commande classique, 2x2 ou 3x3
