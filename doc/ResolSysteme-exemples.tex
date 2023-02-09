@@ -2,7 +2,7 @@
 % !TeX TXS-program:compile = txs:///pdflatex
 
 \documentclass[french,a4paper,10pt]{article}
-\def\RSver{0.1.2}
+\def\RSver{0.1.3}
 \usepackage[margin=1.5cm]{geometry}
 \usepackage{ResolSysteme}
 \usepackage{systeme}
@@ -31,6 +31,24 @@
 On considère les matrices $A=\AffMatrice(1,2 § 3,4)$
 et $B=\AffMatrice*[n](-1,1/3,4 § 1/3,4,-1 § -1,0,0)$
 et $C=\AffMatrice(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)$.
+\end{ShowCodeTeX}
+
+\section{Calculs avec des matrices, 2x2 ou 3x3}
+
+\begin{ShowCodeTeX}
+$\ProduitMatrices(1,2)(3 § 4)[Aff]$ et $\ProduitMatrices(1,2)(3,4 § 5,6)[Aff]$ \\
+$\ProduitMatrices(-5,6 § 1,4)(2 § 7)[Aff]$ et $\ProduitMatrices(-5,6 § 1,4)(2,-4 § 7,0)[Aff]$
+\end{ShowCodeTeX}
+
+\begin{ShowCodeTeX}
+$\ProduitMatrices(1,2,3)(4 § 5 § 6)[Aff]$ et $\ProduitMatrices(1,2,3)(1,1,1 § 2,1,5 § 0,5,-6)[Aff]$\\
+$\ProduitMatrices(1,1,1 § 2,1,5 § 0,5,-6)(1 § 2 § 3)[Aff]$ et
+$\ProduitMatrices(1,1,1 § 2,1,5 § 0,5,-6)(1,2,3 § -5,-4,2 § 3,3,10)[Aff]$
+\end{ShowCodeTeX}
+
+\begin{ShowCodeTeX}
+$\CarreMatrice(-5,6 § 1,4)[Aff]$ \\
+$\CarreMatrice(-5,6,8 § 1,4,-9 § 1,-1,1)[Aff]$
 \end{ShowCodeTeX}
 
 \section{Déterminant d'une matrice, 2x2 ou 3x3}
