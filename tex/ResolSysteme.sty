@@ -2,8 +2,8 @@
 % licence........: Released under the LaTeX Project Public License v1.3c or later, see http://www.latex-project.org/lppl.txtf
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{ResolSysteme}[2023/02/09 v0.1.3 Travailler sur un systeme lineaire avec xint ou pyluatex]
-% 0.1.3		Produit matriciel + Puissance matricielle (2x2/3x3 carré en normal, 2x2/3x3/4x4 avec python)
+\ProvidesPackage{ResolSysteme}[2023/02/10 v0.1.3 Travailler sur un systeme lineaire avec xint ou pyluatex]
+% 0.1.3		Produit matriciel + Puissance matricielle (2x2/3x3 carré en normal, 2x2/3x3/4x4 avec python) + Inversion comportement commandes étoilées
 % 0.1.2		Ajout pour afficher une matrice, à l'aide d'une syntaxe similaire aux autres commandes
 % 0.1.1		Correction d'un bug avec le séparateur ";"
 % 0.1.0		Version initiale
@@ -95,7 +95,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 
 %------conversion en fraction, version interne !
 \NewDocumentCommand\ConvVersFrac{ s O{} m }{%
-	%*=moins devant
+	%*=moins sur le numérateur
 	%2=argument.optionnel[d/t/dec=...]
 	%3=argument mandataire {calcul ou fraction}
 	\def\calculargument{\xintPRaw{\xintIrr{\xinteval{#3}}}}%on calcule et on transforme en A/B
@@ -106,45 +106,45 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 		\ifblank{#2}%
 		{%
 			\IfBooleanTF{#1}%
+			{\ensuremath{\frac{\num{\numerateur}}{\num{\denominateur}}}}%
 			{%
 				\ifthenelse{\numerateur < 0}%
-				{\ensuremath{-\frac{\num{\fpeval{abs(\numerateur)}}}{\num{\denominateur}}}}%
-				{\ensuremath{\frac{\num{\numerateur}}{\num{\denominateur}}}}%
+					{\ensuremath{-\frac{\num{\fpeval{abs(\numerateur)}}}{\num{\denominateur}}}}%
+					{\ensuremath{\frac{\num{\numerateur}}{\num{\denominateur}}}}%
 			}%
-			{\ensuremath{\frac{\num{\numerateur}}{\num{\denominateur}}}}%
 		}%
 		{}%si l'argument optionnel est vide
 		\IfStrEq{#2}{d}%
 		{%
 			\IfBooleanTF{#1}%
+			{\ensuremath{\dfrac{\num{\numerateur}}{\num{\denominateur}}}}%
 			{%
 				\ifthenelse{\numerateur < 0}%
-				{\ensuremath{-\dfrac{\num{\fpeval{abs(\numerateur)}}}{\num{\denominateur}}}}%
-				{\ensuremath{\dfrac{\num{\numerateur}}{\num{\denominateur}}}}%
+					{\ensuremath{-\dfrac{\num{\fpeval{abs(\numerateur)}}}{\num{\denominateur}}}}%
+					{\ensuremath{\dfrac{\num{\numerateur}}{\num{\denominateur}}}}%
 			}%
-			{\ensuremath{\dfrac{\num{\numerateur}}{\num{\denominateur}}}}%
 		}%
 		{}%si l'argument optionnel est vide
 		\IfStrEq{#2}{t}%
 		{%
 			\IfBooleanTF{#1}%
+			{\ensuremath{\tfrac{\num{\numerateur}}{\num{\denominateur}}}}%
 			{%
 				\ifthenelse{\numerateur < 0}%
-				{\ensuremath{-\tfrac{\num{\fpeval{abs(\numerateur)}}}{\num{\denominateur}}}}%
-				{\ensuremath{\tfrac{\num{\numerateur}}{\num{\denominateur}}}}%
+					{\ensuremath{-\tfrac{\num{\fpeval{abs(\numerateur)}}}{\num{\denominateur}}}}%
+					{\ensuremath{\tfrac{\num{\numerateur}}{\num{\denominateur}}}}%
 			}%
-			{\ensuremath{\tfrac{\num{\numerateur}}{\num{\denominateur}}}}%
 		}%
 		{}%si l'argument optionnel est vide
 		\IfStrEq{#2}{n}%
 		{%
-			\IfBooleanTF{#1}%
-			{%
-				\ifthenelse{\numerateur < 0}%
-				{\ensuremath{-\nicefrac{\num{\fpeval{abs(\numerateur)}}}{\num{\denominateur}}}}%
-				{\ensuremath{\nicefrac{\num{\numerateur}}{\num{\denominateur}}}}%
-			}%
+			%\IfBooleanTF{#1}%
 			{\ensuremath{\nicefrac{\num{\numerateur}}{\num{\denominateur}}}}%
+			%{%
+			%	\ifthenelse{\numerateur < 0}%
+			%		{\ensuremath{-\nicefrac{\num{\fpeval{abs(\numerateur)}}}{\num{\denominateur}}}}%
+			%		{\ensuremath{\nicefrac{\num{\numerateur}}{\num{\denominateur}}}}%
+			%}%
 		}%
 		{}%si l'argument optionnel est vide
 		\IfSubStr{#2}{dec}%on veut la forme décimale
@@ -166,7 +166,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 
 %------Affichage d'une matrice classique, 2x2 ou 3x3 ou 4x4
 \NewDocumentCommand\AffMatrice{ s O{} D<>{} r() }{%
-	%*=fractions avec - devant
+	%*=fractions avec - sur le numérateur
 	%2=options conversion
 	%3=options nicematrix
 	%4=matrice (,,;,,)
@@ -308,7 +308,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 
 
 \NewDocumentCommand\CarreMatrice{ s O{} D<>{} r() O{} }{%
-	%*=fractions avec - devant
+	%*=fractions avec - sur le numérateur
 	%2=options conversion
 	%3=options nicematrix
 	%4=matrice (,,;,,)
@@ -505,7 +505,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 
 %------Commande classique, 2x2 ou 3x3
 \NewDocumentCommand\MatriceInverse{ s O{} D<>{} r() O{} }{%
-	%*=fractions avec - devant
+	%*=fractions avec - sur le numérateur
 	%2=options conversion
 	%3=options nicematrix
 	%4=matrice (,,;,,)
@@ -629,7 +629,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 }
 
 \NewDocumentCommand\DetMatrice{ s O{} r() }{%
-	%*=fractions avec - devant
+	%*=fractions avec - sur le numérateur
 	%2=options conversion
 	%3=matrice (,,;,,)
 	%---------------------
@@ -668,7 +668,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 }
 
 \NewDocumentCommand\SolutionSysteme{ s O{} D<>{} r() r() O{} }{%
-	%*=fractions avec - devant
+	%*=fractions avec - sur le numérateur
 	%2=options conversion
 	%3=options nicematrix
 	%4=matrice (,,;,,) principale
@@ -779,7 +779,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 }
 
 \NewDocumentCommand\ProduitMatrices{ s O{} D<>{} r() r() O{} }{%
-	%*=fractions avec - devant
+	%*=fractions avec - sur le numérateur
 	%2=options conversion
 	%3=options nicematrix globales ?
 	%4=matrice (,,§,,) A
@@ -808,7 +808,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 					\itemtomacro\MatA[1,2]\CoeffAb
 					\itemtomacro\MatB[1]\CoeffBa
 					\itemtomacro\MatB[2]\CoeffBb
-					\IfBooleanTF{#1}%version étoilée := moinsdevant
+					\IfBooleanTF{#1}%version étoilée := moins sur num
 						{%
 							\def\MatRes{\ConvVersFrac*[#2]{\CoeffAa*\CoeffBa+\CoeffAb*\CoeffBb}}%
 						}%
@@ -843,7 +843,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 					\itemtomacro\MatB[1,2]\CoeffBb
 					\itemtomacro\MatB[2,1]\CoeffBc
 					\itemtomacro\MatB[2,2]\CoeffBd
-					\IfBooleanTF{#1}%version étoilée := moinsdevant
+					\IfBooleanTF{#1}%version étoilée := moins sur num
 						{%
 							\def\MatResA{\ConvVersFrac*[#2]{\CoeffAa*\CoeffBa+\CoeffAb*\CoeffBc}}%
 							\def\MatResB{\ConvVersFrac*[#2]{\CoeffAa*\CoeffBb+\CoeffAb*\CoeffBd}}%
@@ -880,7 +880,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 					\itemtomacro\MatB[1]\CoeffBa
 					\itemtomacro\MatB[2]\CoeffBb
 					\itemtomacro\MatB[3]\CoeffBc
-					\IfBooleanTF{#1}%version étoilée := moinsdevant
+					\IfBooleanTF{#1}%version étoilée := moins sur num
 						{%
 							\def\MatRes{\ConvVersFrac*[#2]{\CoeffAa*\CoeffBa+\CoeffAb*\CoeffBb+\CoeffAc*\CoeffBc}}%
 						}%
@@ -921,7 +921,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 					\itemtomacro\MatB[3,1]\CoeffBg
 					\itemtomacro\MatB[3,2]\CoeffBh
 					\itemtomacro\MatB[3,3]\CoeffBi
-					\IfBooleanTF{#1}%version étoilée := moinsdevant
+					\IfBooleanTF{#1}%version étoilée := moins sur num
 						{%
 							\def\MatResA{\ConvVersFrac*[#2]{\CoeffAa*\CoeffBa+\CoeffAb*\CoeffBd+\CoeffAc*\CoeffBg}}%
 							\def\MatResB{\ConvVersFrac*[#2]{\CoeffAa*\CoeffBb+\CoeffAb*\CoeffBe+\CoeffAc*\CoeffBh}}%
@@ -968,7 +968,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 					\itemtomacro\MatA[2,2]\CoeffAd
 					\itemtomacro\MatB[1]\CoeffBa
 					\itemtomacro\MatB[2]\CoeffBb
-					\IfBooleanTF{#1}%version étoilée := moinsdevant
+					\IfBooleanTF{#1}%version étoilée := moins sur num
 						{%
 							\def\MatResA{\ConvVersFrac*[#2]{\CoeffAa*\CoeffBa+\CoeffAb*\CoeffBb}}%
 							\def\MatResB{\ConvVersFrac*[#2]{\CoeffAc*\CoeffBa+\CoeffAd*\CoeffBb}}%
@@ -1007,7 +1007,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 					\itemtomacro\MatB[1,2]\CoeffBb
 					\itemtomacro\MatB[2,1]\CoeffBc
 					\itemtomacro\MatB[2,2]\CoeffBd
-					\IfBooleanTF{#1}%version étoilée := moinsdevant
+					\IfBooleanTF{#1}%version étoilée := moins sur num
 						{%
 							\def\MatResA{\ConvVersFrac*[#2]{\CoeffAa*\CoeffBa+\CoeffAb*\CoeffBc}}%
 							\def\MatResB{\ConvVersFrac*[#2]{\CoeffAa*\CoeffBb+\CoeffAd*\CoeffBd}}%
@@ -1054,7 +1054,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 					\itemtomacro\MatB[1]\CoeffBa
 					\itemtomacro\MatB[2]\CoeffBb
 					\itemtomacro\MatB[3]\CoeffBc
-					\IfBooleanTF{#1}%version étoilée := moinsdevant
+					\IfBooleanTF{#1}%version étoilée := moins sur num
 						{%
 							\def\MatResA{\ConvVersFrac*[#2]{\CoeffAa*\CoeffBa+\CoeffAb*\CoeffBb+\CoeffAc*\CoeffBc}}%
 							\def\MatResB{\ConvVersFrac*[#2]{\CoeffAd*\CoeffBa+\CoeffAe*\CoeffBb+\CoeffAf*\CoeffBc}}%
@@ -1085,7 +1085,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 										\ConvVersFrac[#2]{\CoeffAg} & \ConvVersFrac[#2]{\CoeffAh} & \ConvVersFrac[#2]{\CoeffAi}
 									\end{pNiceMatrix}
 									\times
-									\begin{pNiceMatrix}[#3] \ConvVersFrac*[#2]{\CoeffBa} \\ \ConvVersFrac[#2]{\CoeffBb} \\ \ConvVersFrac[#2]{\CoeffBc} \end{pNiceMatrix}
+									\begin{pNiceMatrix}[#3] \ConvVersFrac[#2]{\CoeffBa} \\ \ConvVersFrac[#2]{\CoeffBb} \\ \ConvVersFrac[#2]{\CoeffBc} \end{pNiceMatrix}
 									=
 								}%
 						}{}%
@@ -1113,7 +1113,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 					\itemtomacro\MatB[3,1]\CoeffBg
 					\itemtomacro\MatB[3,2]\CoeffBh
 					\itemtomacro\MatB[3,3]\CoeffBi
-					\IfBooleanTF{#1}%version étoilée := moinsdevant
+					\IfBooleanTF{#1}%version étoilée := moins sur num
 						{%
 							\def\MatResA{\ConvVersFrac*[#2]{\CoeffAa*\CoeffBa+\CoeffAb*\CoeffBd+\CoeffAc*\CoeffBg}}%
 							\def\MatResB{\ConvVersFrac*[#2]{\CoeffAa*\CoeffBb+\CoeffAb*\CoeffBe+\CoeffAc*\CoeffBh}}%
@@ -1155,9 +1155,9 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 								}%
 								{%
 									\begin{pNiceMatrix}[#3]
-										\ConvVersFrac*[#2]{\CoeffAa} & \ConvVersFrac*[#2]{\CoeffAb} & \ConvVersFrac*[#2]{\CoeffAc} \\
-										\ConvVersFrac*[#2]{\CoeffAd} & \ConvVersFrac*[#2]{\CoeffAe} & \ConvVersFrac*[#2]{\CoeffAf} \\
-										\ConvVersFrac*[#2]{\CoeffAg} & \ConvVersFrac*[#2]{\CoeffAh} & \ConvVersFrac*[#2]{\CoeffAi}
+										\ConvVersFrac[#2]{\CoeffAa} & \ConvVersFrac[#2]{\CoeffAb} & \ConvVersFrac[#2]{\CoeffAc} \\
+										\ConvVersFrac[#2]{\CoeffAd} & \ConvVersFrac[#2]{\CoeffAe} & \ConvVersFrac[#2]{\CoeffAf} \\
+										\ConvVersFrac[#2]{\CoeffAg} & \ConvVersFrac[#2]{\CoeffAh} & \ConvVersFrac[#2]{\CoeffAi}
 									\end{pNiceMatrix}
 									\times
 									\begin{pNiceMatrix}[#3]
@@ -1179,7 +1179,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 %------Commandes via pyluatex
 \if@pyluatex %package pyluatex à charger par l'utilisateur !
 \NewDocumentCommand\SolutionSystemePY{ s O{} D<>{} r() r() O{} }{%
-	%*=avec le moins devant
+	%*=fractions avec - sur le numérateur
 	%2=Option Fraction
 	%3=matrice du système
 	%4=second membre
@@ -1328,7 +1328,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 }
 
 \NewDocumentCommand\MatriceInversePY{ s O{} D<>{} r() O{} }{%
-	%*=fractions avec - devant
+	%*=fractions avec - sur le numérateur
 	%2=options conversion
 	%3=options nicematrix
 	%4=matrice (,,;,,)
@@ -1539,7 +1539,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 }
 
 \NewDocumentCommand\MatricePuissancePY{ s O{} D<>{} r() r() O{} }{%
-	%*=fractions avec - devant
+	%*=fractions avec - sur le numérateur
 	%2=options conversion
 	%3=options nicematrix
 	%4=matrice (,,;,,)
@@ -1739,7 +1739,7 @@ def puissance_matrice_DD(a,b,c,d,puiss) :
 }
 
 \NewDocumentCommand\DetMatricePY{ s O{} r() }{%
-	%*=fractions avec - devant
+	%*=fractions avec - sur le numérateur
 	%2=options conversion
 	%3=matrice (,,;,,)
 	%---------------------

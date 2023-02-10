@@ -4,7 +4,7 @@
 
 \documentclass[french,a4paper,11pt]{article}
 \def\TPversion{0.1.3}
-\def\TPdate{9 Février 2023}
+\def\TPdate{10 Février 2023}
 \usepackage[executable=python.exe]{pyluatex}
 \usepackage[table,svgnames]{xcolor}
 \usepackage{amsmath,amssymb}
@@ -55,6 +55,7 @@
 \usepackage[french]{babel}
 
 \usepackage[most]{tcolorbox}
+\usetikzlibrary{calc}
 \tcbuselibrary{minted}
 \NewTCBListing{PresentationCode}{ O{blue} m }{%
 	sharp corners=downhill,enhanced,arc=12pt,skin=bicolor,%
@@ -85,7 +86,23 @@
 	#2
 }
 
+\tcbset{vignettes/.style={%
+	nobeforeafter,box align=base,boxsep=0pt,enhanced,sharp corners=all,rounded corners=southeast,%
+	boxrule=0.75pt,left=7pt,right=1pt,top=0pt,bottom=0.25pt,%
+	}
+}
+
+\tcbset{vignetteMaJ/.style={%
+	fontupper={\vphantom{pf}\footnotesize\ttfamily},
+	vignettes,colframe=ForestGreen!50!black,coltitle=white,colback=ForestGreen!25,%
+	overlay={\begin{tcbclipinterior}%
+			\fill[fill=ForestGreen!75]($(interior.south west)$) rectangle node[rotate=90]{\tiny \sffamily{\textcolor{Black}{\scalebox{0.85}[0.75]{\textbf{MàJ}}}}} ($(interior.north west)+(5pt,0pt)$);%
+	\end{tcbclipinterior}}
+	}
+}
+
 \newcommand\Cle[1]{{\bfseries\sffamily\textlangle #1\textrangle}}
+\newcommand\cmaj[1]{\tcbox[vignetteMaJ]{#1}\xspace}
 
 \begin{document}
 
@@ -160,11 +177,11 @@
 	
 	\medskip
 	
-	L'\textbf{inverse} de la matrice $A=\begin{pNiceMatrix} 1&2&3&4\\5&6&7&0\\1&1&1&1\\-2&-3&-5&-6 \end{pNiceMatrix}$ est $A^{-1}=\MatriceInversePY*[n]<cell-space-limits=2pt>(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)$.
+	L'\textbf{inverse} de la matrice $A=\begin{pNiceMatrix} 1&2&3&4\\5&6&7&0\\1&1&1&1\\-2&-3&-5&-6 \end{pNiceMatrix}$ est $A^{-1}=\MatriceInversePY[n]<cell-space-limits=2pt>(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)$.
 	
 	\medskip
 	
-	La \textbf{solution} de $\systeme[xyzt]{y+z+t=1,x+z+t=-1,x+y+t=1,x+y+z=0}$ est $\mathcal{S}=\left\lbrace\SolutionSystemePY*[d](0,1,1,1 § 1,0,1,1 § 1,1,0,1 § 1,1,1,0)(1,-1,1,0)\right\rbrace$.
+	La \textbf{solution} de $\systeme[xyzt]{y+z+t=1,x+z+t=-1,x+y+t=1,x+y+z=0}$ est $\mathcal{S}=\left\lbrace\SolutionSystemePY[d](0,1,1,1 § 1,0,1,1 § 1,1,0,1 § 1,1,1,0)(1,-1,1,0)\right\rbrace$.
 	\end{tcolorbox}
 \end{center}
 
@@ -287,13 +304,13 @@ Le package peut donc se charger de deux manières différentes, suivant si l'uti
 
 \part{Historique}
 
-\verb|v0.1.3|~:~~~~Ajout de commandes pour du calcul matriciel (de taille raisonnable)
+\verb|v0.1.3|~:~~~~Ajout de commandes pour du calcul matriciel (de taille raisonnable) + inversion comportement des commandes étoilées.
 
-\verb|v0.1.2|~:~~~~Ajout d'une commande d'affichage (formaté) d'une matrice 2x2, 3x3 ou 4x4
+\verb|v0.1.2|~:~~~~Ajout d'une commande d'affichage (formaté) d'une matrice 2x2, 3x3 ou 4x4.
 
-\verb|v0.1.1|~:~~~~Correction d'un bug avec le caractère \og ; \fg{}
+\verb|v0.1.1|~:~~~~Correction d'un bug avec le caractère \og ; \fg.
 
-\verb|v0.1.0|~:~~~~Version initiale
+\verb|v0.1.0|~:~~~~Version initiale.
 
 \pagebreak
 
@@ -317,7 +334,7 @@ En \textit{interne}, le code utilise une commande pour formater un résultat sou
 Concernant cette commande, qui est dans un bloc \texttt{ensuremath} :
 
 \begin{itemize}
-	\item la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} avant l'éventuelle fraction ;
+	\item \cmaj{0.1.3} la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} sur le numérateur ;
 	\item le premier argument, \textit{optionnel} et entre \textsf{[...]} permet de spécifier un formatage du résultat :
 	\begin{itemize}
 		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
@@ -332,9 +349,9 @@ Concernant cette commande, qui est dans un bloc \texttt{ensuremath} :
 \end{tipblock}
 
 \begin{PresentationCode}{listing only}
-\ConvVersFrac{-10+1/3*(-5/16)}          %sortie par défaut (fraction avec - sur numérateur)
-\ConvVersFrac*{-10+1/3*(-5/16)}         %sortie avec - avant la fraction
-\ConvVersFrac*[d]{-10+1/3*(-5/16)}      %sortie en displaystyle
+\ConvVersFrac{-10+1/3*(-5/16)}          %sortie par défaut 
+\ConvVersFrac*{-10+1/3*(-5/16)}         %sortie fraction avec - sur numérateur
+\ConvVersFrac[d]{-10+1/3*(-5/16)}       %sortie en displaystyle
 \ConvVersFrac[n]{-10+1/3*(-5/16)}       %sortie en nicefrac
 \ConvVersFrac[dec=4]{-10+1/3*(-5/16)}   %sortie en décimal arrondi à 0,0001
 \ConvVersFrac{2+91/7}                   %entier correctement formaté
@@ -343,7 +360,7 @@ Concernant cette commande, qui est dans un bloc \texttt{ensuremath} :
 \begin{PresentationCode}{text only}
 \hfill\ConvVersFrac{-10+1/3*(-5/16)} \qquad
 \ConvVersFrac*{-10+1/3*(-5/16)} \qquad
-\ConvVersFrac*[d]{-10+1/3*(-5/16)} \qquad
+\ConvVersFrac[d]{-10+1/3*(-5/16)} \qquad
 \ConvVersFrac[n]{-10+1/3*(-5/16)} \qquad
 \ConvVersFrac[dec=4]{-10+1/3*(-5/16)} \qquad
 \ConvVersFrac{2+91/7}\hfill~
@@ -390,7 +407,7 @@ La première commande (matricielle) est dédiée à l'affichage d'une matrice \t
 Concernant cette commande, qui est à insérer dans un environnement \textit{math} :
 
 \begin{itemize}
-	\item la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} avant l'éventuelle fraction ;
+	\item \cmaj{0.1.3} la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} sur le numérateur ;
 	\item le premier argument, \textit{optionnel} et entre \textsf{[...]} permet de spécifier un formatage du résultat :
 	\begin{itemize}
 		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
@@ -413,7 +430,7 @@ et $C=\AffMatrice(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)$.
 
 \begin{PresentationCode}{}
 On considère la matrice
-$M=\AffMatrice*[d]<cell-space-limits=2pt>(1+1/4,0,3+4/5 § 0,1,-5/3 § 1/2,0.45,6/7)$.
+$M=\AffMatrice[d]<cell-space-limits=2pt>(1+1/4,0,3+4/5 § 0,1,-5/3 § 1/2,0.45,6/7)$.
 \end{PresentationCode}
 
 \pagebreak
@@ -462,7 +479,7 @@ Dans le cas où le produit matriciel n'existe pas, ou ne rentre pas dans le cadr
 Concernant ces commandes, qui sont à insérer dans un environnement \textit{math} :
 
 \begin{itemize}
-	\item la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} avant l'éventuelle fraction ;
+	\item \cmaj{0.1.3} la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} sur le numérateur ;
 	\item le premier argument, \textit{optionnel} et entre \textsf{[...]} permet de spécifier un formatage du résultat :
 	\begin{itemize}
 		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
@@ -536,7 +553,7 @@ La deuxième commande (matricielle) disponible est pour calculer le déterminant
 Concernant cette commande, qui est à insérer dans un environnement \textit{math} :
 
 \begin{itemize}
-	\item la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} avant l'éventuelle fraction ;
+	\item \cmaj{0.1.3} la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} sur le numérateur ;
 	\item le premier argument, \textit{optionnel} et entre \textsf{[...]} permet de spécifier un formatage du résultat :
 	\begin{itemize}
 		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
@@ -564,8 +581,8 @@ $\det(A)=\DetMatrice[dec](-1,0.5 § 1/2,4)$.
 
 \begin{PresentationCode}{}
 %version classique
-Le dét. de $A=\AffMatrice*[t](-1,1/3,4 § 1/3,4,-1 § -1,0,0)$ est
-$\det(A) \approx \DetMatrice[dec=3](-1,1/3,4 § 1/3,4,-1 § -1,0,0)$.
+Le dét. de $A=\AffMatrice[t](-1,1/3,4 § -1/3,4,-1 § -1,0,0)$ est
+$\det(A) \approx \DetMatrice[dec=3](-1,1/3,4 § -1/3,4,-1 § -1,0,0)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
@@ -576,7 +593,7 @@ $\det(A)=\DetMatricePY(1,2 § 3,4)$.
 
 \begin{PresentationCode}{}
 Le dét. de $A=\AffMatrice[dec](-1,0.5 § 1/2,4)$ est
-$\det(A)=\DetMatricePY*[d](-1,0.5 § 1/2,4)$.\end{PresentationCode}
+$\det(A)=\DetMatricePY[d](-1,0.5 § 1/2,4)$.\end{PresentationCode}
 
 \begin{PresentationCode}{}
 %version python
@@ -614,7 +631,7 @@ La troisième commande (matricielle) disponible est pour calculer l'éventuelle 
 Concernant cette commande, qui est à insérer dans un environnement \textit{math} :
 
 \begin{itemize}
-	\item la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} avant l'éventuelle fraction ;
+	\item \cmaj{0.1.3} la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} sur le numérateur ;
 	\item le premier argument, \textit{optionnel} et entre \textsf{[...]} permet de spécifier un formatage du résultat :
 	\begin{itemize}
 		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
@@ -645,14 +662,14 @@ $A^{-1}=\MatriceInverse[n]<cell-space-limits=2pt>(1,2,3 § 4,5,6 § 7,8,8)[Aff]$
 \begin{PresentationCode}{}
 %version python
 L'inverse de $A=\AffMatrice(1,2 § 3,4)$ est
-$A^{-1}=\MatriceInversePY*[d]<cell-space-limits=2pt>(1,2 § 3,4)[Aff]$.
+$A^{-1}=\MatriceInversePY[d]<cell-space-limits=2pt>(1,2 § 3,4)[Aff]$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
 %version python
 L'inv. de $A=\AffMatrice(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)$ est
 $A^{-1}=
-\MatriceInversePY*[n]<cell-space-limits=2pt>(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)$.
+\MatriceInversePY[n]<cell-space-limits=2pt>(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)$.
 \end{PresentationCode}
 
 \pagebreak
@@ -685,7 +702,7 @@ La deuxième commande (matricielle) disponible est pour déterminer l'éventuell
 Concernant cette commande, qui est à insérer dans un environnement \textit{math} :
 
 \begin{itemize}
-	\item la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} avant l'éventuelle fraction ;
+	\item \cmaj{0.1.3} la version \textit{étoilée} force l'écriture du signe \og $-$ \fg{} sur le numérateur ;
 	\item le premier argument, \textit{optionnel} et entre \textsf{[...]} permet de spécifier un formatage du résultat :
 	\begin{itemize}
 		\item \Cle{t} pour l'affichage de la fraction en mode \textsf{tfrac} ;
@@ -705,7 +722,7 @@ Concernant cette commande, qui est à insérer dans un environnement \textit{mat
 \begin{PresentationCode}{}
 %version classique
 La solution de $\systeme{3x+y-2z=-1,2x-y+z=4,x-y-2z=5}$ est $\mathcal{S}=%
-\left\lbrace \SolutionSysteme*[d](3,1,-2 § 2,-1,1 § 1,-1,-2)(-1,4,5) \right\rbrace$.\\
+\left\lbrace \SolutionSysteme[d](3,1,-2 § 2,-1,1 § 1,-1,-2)(-1,4,5) \right\rbrace$.\\
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
@@ -722,7 +739,6 @@ est $\mathcal{S}=%
 	\SolutionSystemePY%
 		[dec]<cell-space-limits=2pt>%
 		(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)(-10,0,4,7)%
-		[Matrice]
 \right\rbrace$.
 \end{PresentationCode}
 
