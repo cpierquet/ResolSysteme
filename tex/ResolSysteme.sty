@@ -2,7 +2,8 @@
 % licence........: Released under the LaTeX Project Public License v1.3c or later, see http://www.latex-project.org/lppl.txtf
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{ResolSysteme}[2023/02/12 v0.1.4 Quelques commandes pour travailler avec des matrices et des sytemes lineaires]
+\ProvidesPackage{ResolSysteme}[2023/02/25 v0.1.5 Quelques commandes pour travailler avec des matrices et des sytemes lineaires]
+% 0.1.5 Inverse d'une matrice en 4x4 (même en normal !) + Système 4x4 (en normal !)
 % 0.1.4	Travail sur graphe probabiliste (2x2/3x3/4x4 en python, ou 2x2 en normal...) + Calculs 4x4 en normal
 % 0.1.3	Produit matriciel + Puissance matricielle (2x2/3x3 carré en normal, 2x2/3x3/4x4 avec python) + Inversion comportement commandes étoilées
 % 0.1.2	Ajout pour afficher une matrice, à l'aide d'une syntaxe similaire aux autres commandes
@@ -585,6 +586,94 @@ def etat_prob_DD(AA,BB,a,b,c,d,puiss) :
 	\readlist*\MAMATRICEA{#4}%
 	\def\MatDim{\MAMATRICEAlen}%
 	%les coeffs de A et le déterminant et les coeff de l'inverse
+	\ifnum \MAMATRICEAlen=4
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[1,3]\MatC
+		\itemtomacro\MAMATRICEA[1,4]\MatD
+		\itemtomacro\MAMATRICEA[2,1]\MatE
+		\itemtomacro\MAMATRICEA[2,2]\MatF
+		\itemtomacro\MAMATRICEA[2,3]\MatG
+		\itemtomacro\MAMATRICEA[2,4]\MatH
+		\itemtomacro\MAMATRICEA[3,1]\MatI
+		\itemtomacro\MAMATRICEA[3,2]\MatJ
+		\itemtomacro\MAMATRICEA[3,3]\MatK
+		\itemtomacro\MAMATRICEA[3,4]\MatL
+		\itemtomacro\MAMATRICEA[4,1]\MatM
+		\itemtomacro\MAMATRICEA[4,2]\MatN
+		\itemtomacro\MAMATRICEA[4,3]\MatO
+		\itemtomacro\MAMATRICEA[4,4]\MatP
+		%le déterminant
+		\def\DETMATRICE{\xinteval{\MatA*\MatF*\MatK*\MatP-\MatA*\MatF*\MatL*\MatO-\MatA*\MatG*\MatJ*\MatP+\MatA*\MatG*\MatL*\MatN+\MatA*\MatH*\MatJ*\MatO-\MatA*\MatH*\MatK*\MatN-\MatB*\MatE*\MatK*\MatP+\MatB*\MatE*\MatL*\MatO+\MatB*\MatG*\MatI*\MatP-\MatB*\MatG*\MatL*\MatM-\MatB*\MatH*\MatI*\MatO+\MatB*\MatH*\MatK*\MatM+\MatC*\MatE*\MatJ*\MatP-\MatC*\MatE*\MatL*\MatN-\MatC*\MatF*\MatI*\MatP+\MatC*\MatF*\MatL*\MatM+\MatC*\MatH*\MatI*\MatN-\MatC*\MatH*\MatJ*\MatM-\MatD*\MatE*\MatJ*\MatO+\MatD*\MatE*\MatK*\MatN+\MatD*\MatF*\MatI*\MatO-\MatD*\MatF*\MatK*\MatM-\MatD*\MatG*\MatI*\MatN+\MatD*\MatG*\MatJ*\MatM}}%
+		%matrice inverse, si elle existe...
+		\xintifboolexpr{\DETMATRICE == 0}%
+			{\text{Matrice non inversible}}%
+			{%
+				\IfBooleanTF{#1}%
+					{%
+						\def\MatInvA{\ConvVersFrac*[#2]{(\MatF*\MatK*\MatP+\MatG*\MatL*\MatN+\MatH*\MatJ*\MatO-\MatF*\MatL*\MatO-\MatG*\MatJ*\MatP-\MatH*\MatK*\MatN)/\DETMATRICE}}%
+						\def\MatInvB{\ConvVersFrac*[#2]{(\MatB*\MatL*\MatO+\MatC*\MatJ*\MatP+\MatD*\MatK*\MatN-\MatB*\MatK*\MatP-\MatC*\MatL*\MatN-\MatD*\MatJ*\MatO)/\DETMATRICE}}%
+						\def\MatInvC{\ConvVersFrac*[#2]{(\MatB*\MatG*\MatP+\MatC*\MatH*\MatN+\MatD*\MatF*\MatO-\MatB*\MatH*\MatO-\MatC*\MatF*\MatP-\MatD*\MatG*\MatN)/\DETMATRICE}}%
+						\def\MatInvD{\ConvVersFrac*[#2]{(\MatB*\MatH*\MatK+\MatC*\MatF*\MatL+\MatD*\MatG*\MatJ-\MatB*\MatG*\MatL-\MatC*\MatH*\MatJ-\MatD*\MatF*\MatK)/\DETMATRICE}}%
+						\def\MatInvE{\ConvVersFrac*[#2]{(\MatE*\MatL*\MatO+\MatG*\MatI*\MatP+\MatH*\MatK*\MatM-\MatE*\MatK*\MatP-\MatG*\MatL*\MatM-\MatH*\MatI*\MatO)/\DETMATRICE}}%
+						\def\MatInvF{\ConvVersFrac*[#2]{(\MatA*\MatK*\MatP+\MatC*\MatL*\MatM+\MatD*\MatI*\MatO-\MatA*\MatL*\MatO-\MatC*\MatI*\MatP-\MatD*\MatK*\MatM)/\DETMATRICE}}%
+						\def\MatInvG{\ConvVersFrac*[#2]{(\MatA*\MatH*\MatO+\MatC*\MatE*\MatP+\MatD*\MatG*\MatM-\MatA*\MatG*\MatP-\MatC*\MatH*\MatM-\MatD*\MatE*\MatO)/\DETMATRICE}}%
+						\def\MatInvH{\ConvVersFrac*[#2]{(\MatA*\MatG*\MatL+\MatC*\MatH*\MatI+\MatD*\MatE*\MatK-\MatA*\MatH*\MatK-\MatC*\MatE*\MatL-\MatD*\MatG*\MatI)/\DETMATRICE}}%
+						\def\MatInvI{\ConvVersFrac*[#2]{(\MatE*\MatJ*\MatP+\MatF*\MatL*\MatM+\MatH*\MatI*\MatN-\MatE*\MatL*\MatN-\MatF*\MatI*\MatP-\MatH*\MatJ*\MatM)/\DETMATRICE}}%
+						\def\MatInvJ{\ConvVersFrac*[#2]{(\MatA*\MatL*\MatN+\MatB*\MatI*\MatP+\MatD*\MatJ*\MatM-\MatA*\MatJ*\MatP-\MatB*\MatL*\MatM-\MatD*\MatI*\MatN)/\DETMATRICE}}%
+						\def\MatInvK{\ConvVersFrac*[#2]{(\MatA*\MatF*\MatP+\MatB*\MatH*\MatM+\MatD*\MatE*\MatN-\MatA*\MatH*\MatN-\MatB*\MatE*\MatP-\MatD*\MatF*\MatM)/\DETMATRICE}}%
+						\def\MatInvL{\ConvVersFrac*[#2]{(\MatA*\MatH*\MatJ+\MatB*\MatE*\MatL+\MatD*\MatF*\MatI-\MatA*\MatF*\MatL-\MatB*\MatH*\MatI-\MatD*\MatE*\MatJ)/\DETMATRICE}}%
+						\def\MatInvM{\ConvVersFrac*[#2]{(\MatE*\MatK*\MatN+\MatF*\MatI*\MatO+\MatG*\MatJ*\MatM-\MatE*\MatJ*\MatO-\MatF*\MatK*\MatM-\MatG*\MatI*\MatN)/\DETMATRICE}}%
+						\def\MatInvN{\ConvVersFrac*[#2]{(\MatA*\MatJ*\MatO+\MatB*\MatK*\MatM+\MatC*\MatI*\MatN-\MatA*\MatK*\MatN-\MatB*\MatI*\MatO-\MatC*\MatJ*\MatM)/\DETMATRICE}}%
+						\def\MatInvO{\ConvVersFrac*[#2]{(\MatA*\MatG*\MatN+\MatB*\MatE*\MatO+\MatC*\MatF*\MatM-\MatA*\MatF*\MatO-\MatB*\MatG*\MatM-\MatC*\MatE*\MatN)/\DETMATRICE}}%
+						\def\MatInvP{\ConvVersFrac*[#2]{(\MatA*\MatF*\MatK+\MatB*\MatG*\MatI+\MatC*\MatE*\MatJ-\MatA*\MatG*\MatJ-\MatB*\MatE*\MatK-\MatC*\MatF*\MatI)/\DETMATRICE}}%
+					}%
+					{%
+						\def\MatInvA{\ConvVersFrac[#2]{(\MatF*\MatK*\MatP+\MatG*\MatL*\MatN+\MatH*\MatJ*\MatO-\MatF*\MatL*\MatO-\MatG*\MatJ*\MatP-\MatH*\MatK*\MatN)/\DETMATRICE}}%
+						\def\MatInvB{\ConvVersFrac[#2]{(\MatB*\MatL*\MatO+\MatC*\MatJ*\MatP+\MatD*\MatK*\MatN-\MatB*\MatK*\MatP-\MatC*\MatL*\MatN-\MatD*\MatJ*\MatO)/\DETMATRICE}}%
+						\def\MatInvC{\ConvVersFrac[#2]{(\MatB*\MatG*\MatP+\MatC*\MatH*\MatN+\MatD*\MatF*\MatO-\MatB*\MatH*\MatO-\MatC*\MatF*\MatP-\MatD*\MatG*\MatN)/\DETMATRICE}}%
+						\def\MatInvD{\ConvVersFrac[#2]{(\MatB*\MatH*\MatK+\MatC*\MatF*\MatL+\MatD*\MatG*\MatJ-\MatB*\MatG*\MatL-\MatC*\MatH*\MatJ-\MatD*\MatF*\MatK)/\DETMATRICE}}%
+						\def\MatInvE{\ConvVersFrac[#2]{(\MatE*\MatL*\MatO+\MatG*\MatI*\MatP+\MatH*\MatK*\MatM-\MatE*\MatK*\MatP-\MatG*\MatL*\MatM-\MatH*\MatI*\MatO)/\DETMATRICE}}%
+						\def\MatInvF{\ConvVersFrac[#2]{(\MatA*\MatK*\MatP+\MatC*\MatL*\MatM+\MatD*\MatI*\MatO-\MatA*\MatL*\MatO-\MatC*\MatI*\MatP-\MatD*\MatK*\MatM)/\DETMATRICE}}%
+						\def\MatInvG{\ConvVersFrac[#2]{(\MatA*\MatH*\MatO+\MatC*\MatE*\MatP+\MatD*\MatG*\MatM-\MatA*\MatG*\MatP-\MatC*\MatH*\MatM-\MatD*\MatE*\MatO)/\DETMATRICE}}%
+						\def\MatInvH{\ConvVersFrac[#2]{(\MatA*\MatG*\MatL+\MatC*\MatH*\MatI+\MatD*\MatE*\MatK-\MatA*\MatH*\MatK-\MatC*\MatE*\MatL-\MatD*\MatG*\MatI)/\DETMATRICE}}%
+						\def\MatInvI{\ConvVersFrac[#2]{(\MatE*\MatJ*\MatP+\MatF*\MatL*\MatM+\MatH*\MatI*\MatN-\MatE*\MatL*\MatN-\MatF*\MatI*\MatP-\MatH*\MatJ*\MatM)/\DETMATRICE}}%
+						\def\MatInvJ{\ConvVersFrac[#2]{(\MatA*\MatL*\MatN+\MatB*\MatI*\MatP+\MatD*\MatJ*\MatM-\MatA*\MatJ*\MatP-\MatB*\MatL*\MatM-\MatD*\MatI*\MatN)/\DETMATRICE}}%
+						\def\MatInvK{\ConvVersFrac[#2]{(\MatA*\MatF*\MatP+\MatB*\MatH*\MatM+\MatD*\MatE*\MatN-\MatA*\MatH*\MatN-\MatB*\MatE*\MatP-\MatD*\MatF*\MatM)/\DETMATRICE}}%
+						\def\MatInvL{\ConvVersFrac[#2]{(\MatA*\MatH*\MatJ+\MatB*\MatE*\MatL+\MatD*\MatF*\MatI-\MatA*\MatF*\MatL-\MatB*\MatH*\MatI-\MatD*\MatE*\MatJ)/\DETMATRICE}}%
+						\def\MatInvM{\ConvVersFrac[#2]{(\MatE*\MatK*\MatN+\MatF*\MatI*\MatO+\MatG*\MatJ*\MatM-\MatE*\MatJ*\MatO-\MatF*\MatK*\MatM-\MatG*\MatI*\MatN)/\DETMATRICE}}%
+						\def\MatInvN{\ConvVersFrac[#2]{(\MatA*\MatJ*\MatO+\MatB*\MatK*\MatM+\MatC*\MatI*\MatN-\MatA*\MatK*\MatN-\MatB*\MatI*\MatO-\MatC*\MatJ*\MatM)/\DETMATRICE}}%
+						\def\MatInvO{\ConvVersFrac[#2]{(\MatA*\MatG*\MatN+\MatB*\MatE*\MatO+\MatC*\MatF*\MatM-\MatA*\MatF*\MatO-\MatB*\MatG*\MatM-\MatC*\MatE*\MatN)/\DETMATRICE}}%
+						\def\MatInvP{\ConvVersFrac[#2]{(\MatA*\MatF*\MatK+\MatB*\MatG*\MatI+\MatC*\MatE*\MatJ-\MatA*\MatG*\MatJ-\MatB*\MatE*\MatK-\MatC*\MatF*\MatI)/\DETMATRICE}}%
+					}%
+				\IfStrEq{#5}{Aff}%si matrice
+					{%
+						\IfBooleanTF{#1}%
+							{%
+								{\begin{pNiceMatrix}[#3]
+									\ConvVersFrac*[#2]{\MatA} & \ConvVersFrac*[#2]{\MatB} & \ConvVersFrac*[#2]{\MatC} & \ConvVersFrac*[#2]{\MatD} \\
+									\ConvVersFrac*[#2]{\MatE} & \ConvVersFrac*[#2]{\MatF} & \ConvVersFrac*[#2]{\MatG} & \ConvVersFrac*[#2]{\MatH} \\
+									\ConvVersFrac*[#2]{\MatI} & \ConvVersFrac*[#2]{\MatJ} & \ConvVersFrac*[#2]{\MatK} & \ConvVersFrac*[#2]{\MatL} \\
+									\ConvVersFrac*[#2]{\MatM} & \ConvVersFrac*[#2]{\MatN} & \ConvVersFrac*[#2]{\MatO} & \ConvVersFrac*[#2]{\MatP}
+								\end{pNiceMatrix}}^{-1}=
+							}%
+							{%
+								{\begin{pNiceMatrix}[#3]
+									\ConvVersFrac[#2]{\MatA} & \ConvVersFrac[#2]{\MatB} & \ConvVersFrac[#2]{\MatC} & \ConvVersFrac[#2]{\MatD} \\
+									\ConvVersFrac[#2]{\MatE} & \ConvVersFrac[#2]{\MatF} & \ConvVersFrac[#2]{\MatG} & \ConvVersFrac[#2]{\MatH} \\
+									\ConvVersFrac[#2]{\MatI} & \ConvVersFrac[#2]{\MatJ} & \ConvVersFrac[#2]{\MatK} & \ConvVersFrac[#2]{\MatL} \\
+									\ConvVersFrac[#2]{\MatM} & \ConvVersFrac[#2]{\MatN} & \ConvVersFrac[#2]{\MatO} & \ConvVersFrac[#2]{\MatP}
+								\end{pNiceMatrix}}^{-1}=
+							}%
+					}{}%
+				\begin{pNiceMatrix}[#3]
+					{\MatInvA}&{\MatInvB}&{\MatInvC}&{\MatInvD}\\
+					{\MatInvE}&{\MatInvF}&{\MatInvG}&{\MatInvH}\\
+					{\MatInvI}&{\MatInvJ}&{\MatInvK}&{\MatInvL}\\
+					{\MatInvM}&{\MatInvN}&{\MatInvO}&{\MatInvP}
+				\end{pNiceMatrix}%
+			}%
+	\fi
 	\ifnum \MAMATRICEAlen=3
 		\itemtomacro\MAMATRICEA[1,1]\MatA
 		\itemtomacro\MAMATRICEA[1,2]\MatB
@@ -771,6 +860,78 @@ def etat_prob_DD(AA,BB,a,b,c,d,puiss) :
 	\readlist*\MAMATRICEB{#5}%
 	\def\MatDim{\MAMATRICEAlen}%
 	%les coeffs de A et le déterminant et les coeff de l'inverse
+	\ifnum \MAMATRICEAlen=4
+		\itemtomacro\MAMATRICEA[1,1]\MatA
+		\itemtomacro\MAMATRICEA[1,2]\MatB
+		\itemtomacro\MAMATRICEA[1,3]\MatC
+		\itemtomacro\MAMATRICEA[1,4]\MatD
+		\itemtomacro\MAMATRICEA[2,1]\MatE
+		\itemtomacro\MAMATRICEA[2,2]\MatF
+		\itemtomacro\MAMATRICEA[2,3]\MatG
+		\itemtomacro\MAMATRICEA[2,4]\MatH
+		\itemtomacro\MAMATRICEA[3,1]\MatI
+		\itemtomacro\MAMATRICEA[3,2]\MatJ
+		\itemtomacro\MAMATRICEA[3,3]\MatK
+		\itemtomacro\MAMATRICEA[3,4]\MatL
+		\itemtomacro\MAMATRICEA[4,1]\MatM
+		\itemtomacro\MAMATRICEA[4,2]\MatN
+		\itemtomacro\MAMATRICEA[4,3]\MatO
+		\itemtomacro\MAMATRICEA[4,4]\MatP
+		%le déterminant
+		\def\DETMATRICE{\xinteval{\MatA*\MatF*\MatK*\MatP-\MatA*\MatF*\MatL*\MatO-\MatA*\MatG*\MatJ*\MatP+\MatA*\MatG*\MatL*\MatN+\MatA*\MatH*\MatJ*\MatO-\MatA*\MatH*\MatK*\MatN-\MatB*\MatE*\MatK*\MatP+\MatB*\MatE*\MatL*\MatO+\MatB*\MatG*\MatI*\MatP-\MatB*\MatG*\MatL*\MatM-\MatB*\MatH*\MatI*\MatO+\MatB*\MatH*\MatK*\MatM+\MatC*\MatE*\MatJ*\MatP-\MatC*\MatE*\MatL*\MatN-\MatC*\MatF*\MatI*\MatP+\MatC*\MatF*\MatL*\MatM+\MatC*\MatH*\MatI*\MatN-\MatC*\MatH*\MatJ*\MatM-\MatD*\MatE*\MatJ*\MatO+\MatD*\MatE*\MatK*\MatN+\MatD*\MatF*\MatI*\MatO-\MatD*\MatF*\MatK*\MatM-\MatD*\MatG*\MatI*\MatN+\MatD*\MatG*\MatJ*\MatM}}%
+		%les coeffs de B
+		\itemtomacro\MAMATRICEB[1]\MatBA
+		\itemtomacro\MAMATRICEB[2]\MatBB
+		\itemtomacro\MAMATRICEB[3]\MatBC
+		\itemtomacro\MAMATRICEB[4]\MatBD
+		%matrice inverse, si elle existe...
+		\xintifboolexpr{\DETMATRICE == 0}%
+			{\text{Matrice non inversible}}%
+			{%
+				\def\MatInvA{(\MatF*\MatK*\MatP+\MatG*\MatL*\MatN+\MatH*\MatJ*\MatO-\MatF*\MatL*\MatO-\MatG*\MatJ*\MatP-\MatH*\MatK*\MatN)/\DETMATRICE}%
+				\def\MatInvB{(\MatB*\MatL*\MatO+\MatC*\MatJ*\MatP+\MatD*\MatK*\MatN-\MatB*\MatK*\MatP-\MatC*\MatL*\MatN-\MatD*\MatJ*\MatO)/\DETMATRICE}%
+				\def\MatInvC{(\MatB*\MatG*\MatP+\MatC*\MatH*\MatN+\MatD*\MatF*\MatO-\MatB*\MatH*\MatO-\MatC*\MatF*\MatP-\MatD*\MatG*\MatN)/\DETMATRICE}%
+				\def\MatInvD{(\MatB*\MatH*\MatK+\MatC*\MatF*\MatL+\MatD*\MatG*\MatJ-\MatB*\MatG*\MatL-\MatC*\MatH*\MatJ-\MatD*\MatF*\MatK)/\DETMATRICE}%
+				\def\MatInvE{(\MatE*\MatL*\MatO+\MatG*\MatI*\MatP+\MatH*\MatK*\MatM-\MatE*\MatK*\MatP-\MatG*\MatL*\MatM-\MatH*\MatI*\MatO)/\DETMATRICE}%
+				\def\MatInvF{(\MatA*\MatK*\MatP+\MatC*\MatL*\MatM+\MatD*\MatI*\MatO-\MatA*\MatL*\MatO-\MatC*\MatI*\MatP-\MatD*\MatK*\MatM)/\DETMATRICE}%
+				\def\MatInvG{(\MatA*\MatH*\MatO+\MatC*\MatE*\MatP+\MatD*\MatG*\MatM-\MatA*\MatG*\MatP-\MatC*\MatH*\MatM-\MatD*\MatE*\MatO)/\DETMATRICE}%
+				\def\MatInvH{(\MatA*\MatG*\MatL+\MatC*\MatH*\MatI+\MatD*\MatE*\MatK-\MatA*\MatH*\MatK-\MatC*\MatE*\MatL-\MatD*\MatG*\MatI)/\DETMATRICE}%
+				\def\MatInvI{(\MatE*\MatJ*\MatP+\MatF*\MatL*\MatM+\MatH*\MatI*\MatN-\MatE*\MatL*\MatN-\MatF*\MatI*\MatP-\MatH*\MatJ*\MatM)/\DETMATRICE}%
+				\def\MatInvJ{(\MatA*\MatL*\MatN+\MatB*\MatI*\MatP+\MatD*\MatJ*\MatM-\MatA*\MatJ*\MatP-\MatB*\MatL*\MatM-\MatD*\MatI*\MatN)/\DETMATRICE}%
+				\def\MatInvK{(\MatA*\MatF*\MatP+\MatB*\MatH*\MatM+\MatD*\MatE*\MatN-\MatA*\MatH*\MatN-\MatB*\MatE*\MatP-\MatD*\MatF*\MatM)/\DETMATRICE}%
+				\def\MatInvL{(\MatA*\MatH*\MatJ+\MatB*\MatE*\MatL+\MatD*\MatF*\MatI-\MatA*\MatF*\MatL-\MatB*\MatH*\MatI-\MatD*\MatE*\MatJ)/\DETMATRICE}%
+				\def\MatInvM{(\MatE*\MatK*\MatN+\MatF*\MatI*\MatO+\MatG*\MatJ*\MatM-\MatE*\MatJ*\MatO-\MatF*\MatK*\MatM-\MatG*\MatI*\MatN)/\DETMATRICE}%
+				\def\MatInvN{(\MatA*\MatJ*\MatO+\MatB*\MatK*\MatM+\MatC*\MatI*\MatN-\MatA*\MatK*\MatN-\MatB*\MatI*\MatO-\MatC*\MatJ*\MatM)/\DETMATRICE}%
+				\def\MatInvO{(\MatA*\MatG*\MatN+\MatB*\MatE*\MatO+\MatC*\MatF*\MatM-\MatA*\MatF*\MatO-\MatB*\MatG*\MatM-\MatC*\MatE*\MatN)/\DETMATRICE}%
+				\def\MatInvP{(\MatA*\MatF*\MatK+\MatB*\MatG*\MatI+\MatC*\MatE*\MatJ-\MatA*\MatG*\MatJ-\MatB*\MatE*\MatK-\MatC*\MatF*\MatI)/\DETMATRICE}%
+				%
+				\IfBooleanTF{#1}%version étoilée := moinsdevant
+					{%
+						\def\MatResA{\ConvVersFrac*[#2]{\MatInvA*\MatBA+\MatInvB*\MatBB+\MatInvC*\MatBC+\MatInvD*\MatBD}}%
+						\def\MatResB{\ConvVersFrac*[#2]{\MatInvE*\MatBA+\MatInvF*\MatBB+\MatInvG*\MatBC+\MatInvH*\MatBD}}%
+						\def\MatResC{\ConvVersFrac*[#2]{\MatInvI*\MatBA+\MatInvJ*\MatBB+\MatInvK*\MatBC+\MatInvL*\MatBD}}%
+						\def\MatResD{\ConvVersFrac*[#2]{\MatInvM*\MatBA+\MatInvN*\MatBB+\MatInvO*\MatBC+\MatInvP*\MatBD}}%
+					}%
+					{%
+						\def\MatResA{\ConvVersFrac[#2]{\MatInvA*\MatBA+\MatInvB*\MatBB+\MatInvC*\MatBC+\MatInvD*\MatBD}}%
+						\def\MatResB{\ConvVersFrac[#2]{\MatInvE*\MatBA+\MatInvF*\MatBB+\MatInvG*\MatBC+\MatInvH*\MatBD}}%
+						\def\MatResC{\ConvVersFrac[#2]{\MatInvI*\MatBA+\MatInvJ*\MatBB+\MatInvK*\MatBC+\MatInvL*\MatBD}}%
+						\def\MatResD{\ConvVersFrac[#2]{\MatInvM*\MatBA+\MatInvN*\MatBB+\MatInvO*\MatBC+\MatInvP*\MatBD}}%
+					}%
+				\IfStrEq{#6}{Matrice}%si matrice
+					{%
+						\begin{pNiceMatrix}[#3]
+							{\MatResA} \\
+							{\MatResB} \\
+							{\MatResC} \\
+							{\MatResD}
+						\end{pNiceMatrix}%
+					}%
+					{%
+						\left( {\MatResA} ; {\MatResB} ; {\MatResC} ; {\MatResD} \right)%
+					}%
+			}%
+	\fi
 	\ifnum \MAMATRICEAlen=3
 		\itemtomacro\MAMATRICEA[1,1]\MatA
 		\itemtomacro\MAMATRICEA[1,2]\MatB

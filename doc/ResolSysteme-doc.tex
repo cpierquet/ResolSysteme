@@ -3,8 +3,8 @@
 % arara: lualatex: {shell: yes, synctex: no, interaction: batchmode} if found('log', '(undefined references|Please rerun|Rerun to get)')
 
 \documentclass[french,a4paper,11pt]{article}
-\def\TPversion{0.1.4}
-\def\TPdate{12 Février 2023}
+\def\TPversion{0.1.5}
+\def\TPdate{25 Février 2023}
 \usepackage[executable=python.exe]{pyluatex}
 \usepackage[table,svgnames]{xcolor}
 \usepackage{amsmath,amssymb}
@@ -319,9 +319,15 @@ L'idée est ici de proposer une version, adaptée à des dimensions classiques, 
 
 \part{Historique}
 
-\verb|v0.1.4|~:~~~~Ajout de commandes pour du calcul matriciel sans pyton (de taille raisonnable) + commandes pour des graphes probabilistes.
+\verb|v0.1.5|~:~~~~Inverse d'une matrice 4x4 et système 4x4 (même en normal).
 
-\verb|v0.1.3|~:~~~~Ajout de commandes pour du calcul matriciel (de taille raisonnable) + inversion comportement des commandes étoilées.
+\verb|v0.1.4|~:~~~~Ajout de commandes pour du calcul matriciel sans python (de taille raisonnable) ;
+
+\verb|      |~~~~~~commandes pour des graphes probabilistes.
+
+\verb|v0.1.3|~:~~~~Ajout de commandes pour du calcul matriciel (de taille raisonnable) ;
+
+\verb|      |~~~~~~inversion du comportement des commandes étoilées.
 
 \verb|v0.1.2|~:~~~~Ajout d'une commande d'affichage (formaté) d'une matrice 2x2, 3x3 ou 4x4.
 
@@ -655,8 +661,8 @@ est $\det(A)=\DetMatricePY(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)$.
 Une commande (matricielle) disponible est pour calculer l'éventuelle inverse d'une matrice :
 
 \begin{itemize}
-	\item \textbf{2x2} ou \textbf{3x3} pour le package \textit{classique} ;
-	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} pour la version \textsf{python}.
+	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} (\cmaj{0.1.5}) pour le package \textit{classique} ;
+	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} également pour la version \textsf{python}.
 \end{itemize}
 \vspace*{-\baselineskip}\leavevmode
 \end{cautionblock}
@@ -707,6 +713,13 @@ $A^{-1}=\MatriceInverse[n]<cell-space-limits=2pt>(1,2,3 § 4,5,6 § 7,8,8)[Aff]$
 %version python
 L'inverse de $A=\AffMatrice(1,2 § 3,4)$ est
 $A^{-1}=\MatriceInversePY[d]<cell-space-limits=2pt>(1,2 § 3,4)[Aff]$.
+\end{PresentationCode}
+
+\begin{PresentationCode}{}
+%version normale
+L'inv. de $A=\AffMatrice(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)$ est
+$A^{-1}=
+\MatriceInverse[n]<cell-space-limits=2pt>(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
@@ -830,8 +843,8 @@ $P_4 \approx \EtatProbPY[dec=3]
 Il existe une commande (matricielle) pour déterminer l'éventuelle solution d'un système linéaire qui s'écrit matriciellement $A\times X=B$:
 
 \begin{itemize}
-	\item \textbf{2x2} ou \textbf{3x3} pour le package \textit{classique} ;
-	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} pour le package en version \textsf{python}.
+	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} (\cmaj{0.1.5}) pour le package \textit{classique} ;
+	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} également pour le package en version \textsf{python}.
 \end{itemize}
 \vspace*{-\baselineskip}\leavevmode
 \end{cautionblock}
@@ -877,6 +890,17 @@ La solution de $\systeme{3x+y-2z=-1,2x-y+z=4,x-y-2z=5}$ est $\mathcal{S}=%
 %version python
 La solution de $\systeme{x+y+z=-1,3x+2y-z=6,-x-y+2z=-5}$ est $\mathcal{S}=%
 \left\lbrace \SolutionSystemePY(1,1,1 § 3,2,-1 § -1,-1,2)(-1,6,-5) \right\rbrace$.
+\end{PresentationCode}
+
+\begin{PresentationCode}{}
+%version normal
+La solution de $\systeme[xyzt]{x+2y+3z+4t=-10,5x+6y+7z=0,x+y+z+t=4,-2x-3y-5z-6t=7}$
+est $\mathcal{S}=%
+	\left\lbrace
+		\SolutionSysteme%
+		[dec]<cell-space-limits=2pt>%
+		(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)(-10,0,4,7)%
+\right\rbrace$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}

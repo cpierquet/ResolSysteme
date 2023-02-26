@@ -2,14 +2,14 @@
 % !TeX TXS-program:compile = txs:///pdflatex
 
 \documentclass[french,a4paper,10pt]{article}
-\def\RSver{0.1.4}
+\def\RSver{0.1.5}
 \usepackage[margin=1.5cm]{geometry}
 \usepackage{ResolSysteme}
 \usepackage{systeme}
 \usepackage{babel}
 \usepackage[most]{tcolorbox}
 \sisetup{locale=FR,output-decimal-marker={,}}
-\newtcblisting{ShowCodeTeX}[1][]{colback=white,colframe=red!75!black,listing options={style=tcblatex},#1}
+\newtcblisting{ShowCodeTeX}[1][]{colback=white,colframe=red!75!black,listing options={style=tcblatex,texcsstyle=*\color{red!70!black}},#1}
 
 \begin{document}
 
@@ -81,7 +81,7 @@ Le dét. de $A=\begin{pNiceMatrix} 1&2&3&4\\5&6&7&0\\1&1&1&1\\2&-3&-5&-6 \end{pN
 est $\det(A)=\DetMatrice(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)$.
 \end{ShowCodeTeX}
 
-\section{Inverse d'une matrice, 2x2 ou 3x3}
+\section{Inverse d'une matrice, 2x2 ou 3x3 ou 4x4}
 
 \begin{ShowCodeTeX}
 L'inverse de $A=\begin{pNiceMatrix} 1&2 \\ 3&4 \end{pNiceMatrix}$ est
@@ -108,7 +108,12 @@ L'inverse de $A=\begin{pNiceMatrix} 1&2&3\\4&5&6\\7&8&8 \end{pNiceMatrix}$ est
 $A^{-1}=\MatriceInverse[n]<cell-space-limits=2pt>(1,2,3 § 4,5,6 § 7,8,8)$.
 \end{ShowCodeTeX}
 
-\section*{Résolution d'un système, 2x2 ou 3x3}
+\begin{ShowCodeTeX}
+L'inverse de $A=\begin{pNiceMatrix} 1&2&3&4\\5&6&7&0\\1&1&1&1\\2&-3&-5&-6 \end{pNiceMatrix}$
+est $A^{-1}=\MatriceInverse[n]<cell-space-limits=2pt>(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)$.
+\end{ShowCodeTeX}
+
+\section*{Résolution d'un système, 2x2 ou 3x3 ou 4x4}
 
 \begin{ShowCodeTeX}
 La solution de $\systeme{-9x-8y=-8,3x-6y=-7}$ est $\mathcal{S}=%
@@ -138,6 +143,19 @@ La solution de $\systeme{3x+y-2z=-1,2x-y+z=4,x-y-2z=5}$ est $\mathcal{S}=%
 \begin{ShowCodeTeX}
 La solution de $\systeme{3x+y-2z=-1,2x-y+z=4,x-y-2z=5}$ est $\mathcal{S}=%
 \left\lbrace \SolutionSysteme[d](3,1,-2 § 2,-1,1 § 1,-1,-2)(-1,4,5) \right\rbrace$.
+\end{ShowCodeTeX}
+
+\begin{ShowCodeTeX}
+La solution de $\systeme[xyzt]{y+z+t=1,x+z+t=-1,x+y+t=1,x+y+z=0}$ est $\mathcal{S}=%
+\left\lbrace\SolutionSysteme[d](0,1,1,1 § 1,0,1,1 § 1,1,0,1 § 1,1,1,0)(1,-1,1,0)\right\rbrace$.
+\end{ShowCodeTeX}
+
+\begin{ShowCodeTeX}
+La solution de $\systeme[xyzt]{x+2y+3z+4t=-10,5x+6y+7z=0,x+y+z+t=4,-2x-3y-5z-6t=7}$ est $X=
+\SolutionSysteme
+    [dec]<cell-space-limits=2pt>
+    (1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)(-10,0,4,7)
+    [Matrice]$
 \end{ShowCodeTeX}
 
 \section{État stable d'une graphe probabiliste, 2x2}
