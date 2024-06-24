@@ -148,7 +148,7 @@
 
 \vspace{0.25cm}
 
-{$\blacktriangleright$~~Une commande pour afficher une matrice carrée (2x2, 3x3 ou 4x4) avec la syntaxe du package.}
+{$\blacktriangleright$~~Une commande pour afficher une matrice carrée ($2\times2$, $3\times3$ ou $4\times4$) avec la syntaxe du package.}
 
 \smallskip
 
@@ -156,15 +156,15 @@
 
 \smallskip
 
-{$\blacktriangleright$~~Des commandes pour calculer le déterminant et l'inverse de matrices carrées (2x2, 3x3 ou 4x4).}
+{$\blacktriangleright$~~Des commandes pour calculer le déterminant et l'inverse de matrices carrées ($2\times2$, $3\times3$ ou $4\times4).}
 
 \smallskip
 
-{$\blacktriangleright$~~Des commandes pour résoudre des systèmes linéaires (2x2, 3x3 ou 4x4).}
+{$\blacktriangleright$~~Des commandes pour résoudre des systèmes linéaires ($2\times2$, $3\times3$ ou $4\times4$).}
 
 \smallskip
 
-{$\blacktriangleright$~~Des commandes pour travailler sur des graphes probabilistes (2x2, 3x3 ou 4x4).}
+{$\blacktriangleright$~~Des commandes pour travailler sur des graphes probabilistes ($2\times2$, $3\times3$ ou $4\times4$).}
 
 \vspace{1cm}
 
@@ -240,8 +240,8 @@ La package \textit{propose} des outils pour travailler sur des matrices ou des s
 À noter que les calculs -- en interne -- peuvent être effectués de deux manières :
 
 \begin{itemize}
-	\item via les packages \textsf{xint*} pour des formats \textbf{2x2} ou \textbf{3x3} (et dans une certaine mesure pour des \textbf{4x4}) ;
-	\item via \textsf{python} et le package \textsf{pyluatex} (à charger manuellement du fait des options spécifiques) pour des formats \textbf{2x2}, \textbf{3x3} ou \textbf{4x4}.
+	\item via les packages \textsf{xint*} pour des formats $\mathbf{2\times2}$ ou $\mathbf{3\times3}$ (et dans une certaine mesure pour des $\mathbf{4\times4$}) ;
+	\item via \textsf{Python} et le package \textsf{pyluatex} (à charger manuellement du fait des options spécifiques) pour des formats $\mathbf{2\times2}$, $\mathbf{3\times3}$ ou $\mathbf{4\times4}$.
 \end{itemize}
 
 Il n'est pas prévu -- pour le moment -- de travailler sur des matrices/systèmes plus grands, car l'idée est de pouvoir formater le résultat, ce qui se fait coefficient par coefficient.
@@ -283,7 +283,7 @@ En marge de la présente documentation, compilée en \textsf{lualatex} avec \tex
 
 \begin{itemize}
 	\item \texttt{ResolSysteme-exemples} pour les commandes disponibles en version classique (\textsf{xint}) ;
-	\item \texttt{ResolSysteme-exemples-pyluatex} pour les commandes disponibles en version python (\textsf{pyluatex}).
+	\item \texttt{ResolSysteme-exemples-pyluatex} pour les commandes disponibles en version Python (\textsf{pyluatex}).
 \end{itemize}
 \vspace*{-\baselineskip}\leavevmode
 \end{noteblock}
@@ -293,7 +293,7 @@ En marge de la présente documentation, compilée en \textsf{lualatex} avec \tex
 \subsection{Chargement du package, et option}
 
 \begin{importantblock}
-Le package peut donc se charger de deux manières différentes, suivant si l'utilisateur utilise \textsf{python} ou non. Les commandes \textit{classiques} sont disponibles même si \textsf{python} est utilisé.
+Le package peut donc se charger de deux manières différentes, suivant si l'utilisateur utilise \textsf{Python} ou non. Les commandes \textit{classiques} sont disponibles même si \textsf{Python} est utilisé.
 \end{importantblock}
 
 \begin{PresentationCode}{listing only}
@@ -310,18 +310,18 @@ Le package peut donc se charger de deux manières différentes, suivant si l'uti
 \section{Comparaison avec d'autres solutions}
 
 \begin{noteblock}
-D'autres solutions existent pour faire du calcul matriciel, on peut pas exemple citer les excellents packages \textsf{calculator} ou \textsf{lualinalg} !
+D'autres solutions existent pour faire du calcul matriciel, on peut par exemple citer les excellents packages \textsf{calculator} ou \textsf{lualinalg} !
 
 \smallskip
 
-L'idée est ici de proposer une version, adaptée à des dimensions classiques, avec formatage des calculs, sous forme de fraction irréductible notamment. Les formatages étant effectués \textit{a posteriori}, j'ai choisi de limiter ce package à des formats de taille raisonnable (\textbf{1x2} à \textbf{4x4}).
+L'idée est ici de proposer une version, adaptée à des dimensions classiques, avec formatage des calculs, sous forme de fraction irréductible notamment. Les formatages étant effectués \textit{a posteriori}, j'ai choisi de limiter ce package à des formats de taille raisonnable ($\mathbf{1\times2}$ à $\mathbf{4\times4}$).
 \end{noteblock}
 
 \part{Historique}
 
-\verb|v0.1.5|~:~~~~Inverse d'une matrice 4x4 et système 4x4 (même en normal).
+\verb|v0.1.5|~:~~~~Inverse d'une matrice $4\times4$ et système $4\times4$ (même en normal).
 
-\verb|v0.1.4|~:~~~~Ajout de commandes pour du calcul matriciel sans python (de taille raisonnable) ;
+\verb|v0.1.4|~:~~~~Ajout de commandes pour du calcul matriciel sans Python (de taille raisonnable) ;
 
 \verb|      |~~~~~~commandes pour des graphes probabilistes.
 
@@ -329,7 +329,7 @@ L'idée est ici de proposer une version, adaptée à des dimensions classiques, 
 
 \verb|      |~~~~~~inversion du comportement des commandes étoilées.
 
-\verb|v0.1.2|~:~~~~Ajout d'une commande d'affichage (formaté) d'une matrice 2x2, 3x3 ou 4x4.
+\verb|v0.1.2|~:~~~~Ajout d'une commande d'affichage (formaté) d'une matrice $2\times2$, $3\times3$ ou $4\times4$.
 
 \verb|v0.1.1|~:~~~~Correction d'un bug avec le caractère \og ; \fg.
 
@@ -410,7 +410,7 @@ Les \textit{transformations} en fraction devraient pouvoir fonctionner avec des 
 \subsection{La commande}
 
 \begin{cautionblock}
-Une commande (matricielle) est dédiée à l'affichage d'une matrice \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} (\textsf{python} est ici non nécessaire !) :
+Une commande (matricielle) est dédiée à l'affichage d'une matrice $\mathbf{2\times2}$ ou $\mathbf{3\times3}$ ou $\mathbf{4\times4}$ (\textsf{Python} est ici non nécessaire !) :
 
 \begin{itemize}
 	\item en saisissant les coefficients via une syntaxe propre au package (l'affichage est géré en interne par \textsf{nicematrix}) ;
@@ -481,8 +481,8 @@ L'idée est de proposer des commandes pour effectuer des calculs matriciels \tex
 		\item $(4\times4)\times(4\times4)$ ;
 		\item $(4\times4)\times(4\times1)$ ;
 	\end{itemize}
-	\item le carré d'une matrice 2x2 ou 3x3 ou 4x4 ;
-	\item la puissance d'une matrice 2x2 ou 3x3 ou 4x4 (via \textsf{python}).
+	\item le carré d'une matrice $2÷times2$ ou $3\times3$ ou $4\times4$ ;
+	\item la puissance d'une matrice $2\times2$ ou $3\times3$ ou $4\times4$ (via \textsf{Python}).
 \end{itemize}
 \vspace*{-\baselineskip}\leavevmode
 \end{cautionblock}
@@ -572,7 +572,7 @@ $\MatricePuissancePY(1,1,1,1 § 5,-2,1,5 § 0,5,2,-1 § 0,1,1,1)(5)[Aff]$
 Une commande est disponible pour calculer le déterminant d'une matrice :
 
 \begin{itemize}
-	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4}.
+	\item $\mathbf{2\times2}$ ou $\mathbf{3\times3}$ ou $\mathbf{4\times4}$.
 \end{itemize}
 \vspace*{-\baselineskip}\leavevmode
 \end{cautionblock}
@@ -581,7 +581,7 @@ Une commande est disponible pour calculer le déterminant d'une matrice :
 %version classique
 \DetMatrice(*)[option de formatage](matrice)
 
-%version python
+%version Python
 \DetMatricePY(*)[option de formatage](matrice)
 \end{PresentationCode}
 
@@ -629,7 +629,7 @@ est $\det(A)=\DetMatrice(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version python
+%version Python
 Le dé. de $A=\AffMatrice(1,2 § 3,4)$ est
 $\det(A)=\DetMatricePY(1,2 § 3,4)$.
 \end{PresentationCode}
@@ -640,13 +640,13 @@ $\det(A)=\DetMatricePY[d](-1,0.5 § 1/2,4)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version python
+%version Python
 Le dét. de $A=\AffMatrice(-1,1/3,4 § 1/3,4,-1 § -1,0,0)$ est
 $\det(A) \approx \DetMatricePY[dec=3](-1,1/3,4 § 1/3,4,-1 § -1,0,0)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version python
+%version Python
 Le dét. de $A=\AffMatrice(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)$
 est $\det(A)=\DetMatricePY(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)$.
 \end{PresentationCode}
@@ -661,8 +661,8 @@ est $\det(A)=\DetMatricePY(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)$.
 Une commande (matricielle) disponible est pour calculer l'éventuelle inverse d'une matrice :
 
 \begin{itemize}
-	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} (\cmaj{0.1.5}) pour le package \textit{classique} ;
-	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} également pour la version \textsf{python}.
+	\item $\mathbf{2\times2}$ ou $\mathbf{3\times3}$ ou $\mathbf{4\times4}$ (\cmaj{0.1.5}) pour le package \textit{classique} ;
+	\item $\mathbf{2\times2}$ ou $\mathbf{3\times3}$ ou $\mathbf{4\times4}$ également pour la version \textsf{Python}.
 \end{itemize}
 \vspace*{-\baselineskip}\leavevmode
 \end{cautionblock}
@@ -671,7 +671,7 @@ Une commande (matricielle) disponible est pour calculer l'éventuelle inverse d'
 %version classique
 \MatriceInverse(*)[option de formatage]<options nicematrix>(matrice)[Clé]
 
-%version python
+%version Python
 \MatriceInversePY(*)[option de formatage]<options nicematrix>(matrice)[Clé]
 \end{PresentationCode}
 
@@ -710,7 +710,7 @@ $A^{-1}=\MatriceInverse[n]<cell-space-limits=2pt>(1,2,3 § 4,5,6 § 7,8,8)[Aff]$
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version python
+%version Python
 L'inverse de $A=\AffMatrice(1,2 § 3,4)$ est
 $A^{-1}=\MatriceInversePY[d]<cell-space-limits=2pt>(1,2 § 3,4)[Aff]$.
 \end{PresentationCode}
@@ -723,7 +723,7 @@ $A^{-1}=
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version python
+%version Python
 L'inv. de $A=\AffMatrice(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)$ est
 $A^{-1}=
 \MatriceInversePY[n]<cell-space-limits=2pt>(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § -2,-3,-5,-6)$.
@@ -736,17 +736,17 @@ $A^{-1}=
 \subsection{Introduction}
 
 \begin{cautionblock}
-\cmaj{0.1.4} Il existe des commandes pour travailler sur un graphe probabiliste (avec le package en version \textsf{python}) :
+\cmaj{0.1.4} Il existe des commandes pour travailler sur un graphe probabiliste (avec le package en version \textsf{Python}) :
 
 \begin{itemize}
-	\item afficher un état probabiliste (\textbf{1x2} ou \textbf{1x3} ou \textbf{1x4}, version normale ou version \textsf{python}) ;
-	\item déterminer un état probabiliste à une certaine étape, uniquement en version \textsf{python}.
+	\item afficher un état probabiliste ($\mathbf{1\times2}$ ou $\mathbf{1\times3}$ ou $\mathbf{1\times4}$, version normale ou version \textsf{Python}) ;
+	\item déterminer un état probabiliste à une certaine étape, uniquement en version \textsf{Python}.
 \end{itemize}
 \vspace*{-\baselineskip}\leavevmode
 \end{cautionblock}
 
 \begin{PresentationCode}{listing only}
-%version classique ou python
+%version classique ou Python
 \AffEtatProb[opt de formatage]<opts nicematrix>(matrice ligne)
 \EtatProbPY[opt de formatage]<opts nicematrix>(état init)(mat de trans)(étape)
 \end{PresentationCode}
@@ -843,8 +843,8 @@ $P_4 \approx \EtatProbPY[dec=3]
 Il existe une commande (matricielle) pour déterminer l'éventuelle solution d'un système linéaire qui s'écrit matriciellement $A\times X=B$:
 
 \begin{itemize}
-	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} (\cmaj{0.1.5}) pour le package \textit{classique} ;
-	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} également pour le package en version \textsf{python}.
+	\item $\mathbf{2\times2}$ ou $\mathbf{3\times3}$ ou $\mathbf{4\times4}$ (\cmaj{0.1.5}) pour le package \textit{classique} ;
+	\item $\mathbf{2\times2}$ ou $\mathbf{3\times3}$ ou $\mathbf{4\times4}$ également pour le package en version \textsf{Python}.
 \end{itemize}
 \vspace*{-\baselineskip}\leavevmode
 \end{cautionblock}
@@ -853,7 +853,7 @@ Il existe une commande (matricielle) pour déterminer l'éventuelle solution d'u
 %version classique
 \SolutionSysteme(*)[opt de formatage]<opts nicematrix>(matriceA)(matriceB)[Clé]
 
-%version python
+%version Python
 \SolutionSystemePY(*)[opt de formatage]<opts nicematrix>(matriceA)(matriceB)[Clé]
 \end{PresentationCode}
 
@@ -887,7 +887,7 @@ La solution de $\systeme{3x+y-2z=-1,2x-y+z=4,x-y-2z=5}$ est $\mathcal{S}=%
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version python
+%version Python
 La solution de $\systeme{x+y+z=-1,3x+2y-z=6,-x-y+2z=-5}$ est $\mathcal{S}=%
 \left\lbrace \SolutionSystemePY(1,1,1 § 3,2,-1 § -1,-1,2)(-1,6,-5) \right\rbrace$.
 \end{PresentationCode}
@@ -904,7 +904,7 @@ est $\mathcal{S}=%
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version python
+%version Python
 La solution de $\systeme[xyzt]{x+2y+3z+4t=-10,5x+6y+7z=0,x+y+z+t=4,-2x-3y-5z-6t=7}$
 est $\mathcal{S}=%
 \left\lbrace
@@ -930,8 +930,8 @@ La solution de $\systeme{x+2y=-5,4x+8y=1}$ est $\mathcal{S}=%
 \cmaj{0.1.4} Il existe une commande (matricielle) pour déterminer l'éventuel état stable d'un graphe probabiliste :
 
 \begin{itemize}
-	\item \textbf{2x2} pour le package \textit{classique} ;
-	\item \textbf{2x2} ou \textbf{3x3} ou \textbf{4x4} pour le package en version \textsf{python}.
+	\item $\mathbf{2\times2}$ pour le package \textit{classique} ;
+	\item $\mathbf{2\times2}$ ou $\mathbf{3\times3}$ ou $\mathbf{4\times4}$ pour le package en version \textsf{Python}.
 \end{itemize}
 \vspace*{-\baselineskip}\leavevmode
 \end{cautionblock}
@@ -940,7 +940,7 @@ La solution de $\systeme{x+2y=-5,4x+8y=1}$ est $\mathcal{S}=%
 %version classique
 \EtatStable[opt de formatage]<opts nicematrix>(matriceA)
 
-%version python
+%version Python
 \EtatStablePY[opt de formatage]<opts nicematrix>(matriceA)
 \end{PresentationCode}
 
@@ -974,7 +974,7 @@ ou $\Pi = \EtatStable[dec](0.72,0.28 § 0.12,0.88)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version python
+%version Python
 L'état stable du gr. prob. de matrice
 $M=\AffMatrice[dec](0.72,0.28 § 0.12,0.88)$
 
@@ -983,7 +983,7 @@ ou $\Pi = \EtatStablePY[dec](0.72,0.28 § 0.12,0.88)$.
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version python
+%version Python
 L'état stable du gr. prob. de matrice
 $M=\AffMatrice[dec](0.9,0.03,0.07 § 0.30,0.43,0.27 § 0.14,0.07,0.79)$
 
@@ -992,7 +992,7 @@ ou $\Pi = \EtatStablePY[dec](0.9,0.03,0.07 § 0.30,0.43,0.27 § 0.14,0.07,0.79)$
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
-%version python
+%version Python
 L'état stable du gr. prob. de matrice
 $M=\AffMatrice[dec]%
 	(0.1,0.2,0.3,0.4 § 0.25,0.25,0.25,0.25 § 0.15,0.15,0.2,0.5 § 0.3,0.3,0.2,0.2)$
@@ -1005,7 +1005,7 @@ est $\Pi \approx
 
 \pagebreak
 
-\part{Fonctions python utilisées}
+\part{Fonctions Python utilisées}
 
 \begin{cautionblock}
 Les fonctions utilisées par les packages \textsf{pyluatex} ou \textsf{pythontex} sont données ci-dessous.
