@@ -3,8 +3,8 @@
 % arara: lualatex: {shell: yes, synctex: no, interaction: batchmode} if found('log', '(undefined references|Please rerun|Rerun to get)')
 
 \documentclass[french,a4paper,11pt]{article}
-\def\TPversion{0.1.5}
-\def\TPdate{25 Février 2023}
+\def\TPversion{0.1.7}
+\def\TPdate{22 juin 2024}
 \usepackage[executable=python.exe]{pyluatex}
 \usepackage[table,svgnames]{xcolor}
 \usepackage{amsmath,amssymb}
@@ -318,6 +318,10 @@ L'idée est ici de proposer une version, adaptée à des dimensions classiques, 
 \end{noteblock}
 
 \part{Historique}
+
+\verb|v0.1.6|~:~~~~Correction de bugs dans certains calculs avec des fractions.
+
+\verb|v0.1.6|~:~~~~Correction de bugs dans certains calculs.
 
 \verb|v0.1.5|~:~~~~Inverse d'une matrice 4x4 et système 4x4 (même en normal).
 
@@ -904,6 +908,12 @@ est $\mathcal{S}=%
 \end{PresentationCode}
 
 \begin{PresentationCode}{}
+La solution de $\systeme{\frac{2}{7}x + \frac{5}{9}y = 13,\frac{73}{37} x - 9y=-11}$
+est $\mathcal{S}=
+\left\lbrace \SolutionSysteme[d](2/7,5/9 § 73/37,-9)(13,-11) \right\rbrace$.
+\end{PresentationCode}
+
+\begin{PresentationCode}{}
 %version python
 La solution de $\systeme[xyzt]{x+2y+3z+4t=-10,5x+6y+7z=0,x+y+z+t=4,-2x-3y-5z-6t=7}$
 est $\mathcal{S}=%
@@ -919,8 +929,6 @@ est $\mathcal{S}=%
 La solution de $\systeme{x+2y=-5,4x+8y=1}$ est $\mathcal{S}=%
 \left\lbrace \SolutionSystemePY(1,2 § 4,8)(-5,1) \right\rbrace$.
 \end{PresentationCode}
-
-\pagebreak
 
 \section{Recherche d'un état stable (graphe probabiliste)}
 
