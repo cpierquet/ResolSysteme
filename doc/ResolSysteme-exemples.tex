@@ -2,7 +2,7 @@
 % !TeX TXS-program:compile = txs:///pdflatex
 
 \documentclass[french,a4paper,10pt]{article}
-\def\RSver{0.1.7}
+\def\RSver{0.1.8}
 \usepackage[margin=1.5cm]{geometry}
 \usepackage{ResolSysteme}
 \usepackage{systeme}
@@ -15,7 +15,7 @@
 
 \part*{ResolSysteme (\RSver), version \og classique \fg{}}
 
-\section{Préambule sans utiliser python}
+\section{Préambule sans utiliser Python}
 
 \begin{ShowCodeTeX}[listing only]
 \documentclass[french,a4paper,10pt]{article}
@@ -25,7 +25,7 @@
 \sisetup{locale=FR,output-decimal-marker={,}}
 \end{ShowCodeTeX}
 
-\section{Affichage d'une matrice, 2x2 ou 3x3 ou 4x4}
+\section{Affichage d'une matrice, 2×2 ou 3×3 ou 4×4}
 
 \begin{ShowCodeTeX}
 On considère les matrices $A=\AffMatrice(1,2 § 3,4)$
@@ -33,7 +33,7 @@ et $B=\AffMatrice[n](-1,1/3,4 § 1/3,4,-1 § -1,0,0)$
 et $C=\AffMatrice(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)$.
 \end{ShowCodeTeX}
 
-\section{Calculs avec des matrices, 2x2 ou 3x3 ou 4x4}
+\section{Calculs avec des matrices, 2×2 ou 3×3 ou 4×4}
 
 \begin{ShowCodeTeX}
 $\ProduitMatrices(1,2)(3 § 4)[Aff]$ et $\ProduitMatrices(1,2)(3,4 § 5,6)[Aff]$ \\
@@ -59,7 +59,7 @@ $\CarreMatrice(-5,6,8 § 1,4,-9 § 1,-1,1)[Aff]$\\
 $\CarreMatrice(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)[Aff]$
 \end{ShowCodeTeX}
 
-\section{Déterminant d'une matrice, 2x2 ou 3x3 ou 4x4}
+\section{Déterminant d'une matrice, 2×2 ou 3×3 ou 4×4}
 
 \begin{ShowCodeTeX}
 Le déterminant de $A=\AffMatrice(1,2 § 3,4)$ est
@@ -81,7 +81,7 @@ Le dét. de $A=\begin{pNiceMatrix} 1&2&3&4\\5&6&7&0\\1&1&1&1\\2&-3&-5&-6 \end{pN
 est $\det(A)=\DetMatrice(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)$.
 \end{ShowCodeTeX}
 
-\section{Inverse d'une matrice, 2x2 ou 3x3 ou 4x4}
+\section{Inverse d'une matrice, 2×2 ou 3×3 ou 4×4}
 
 \begin{ShowCodeTeX}
 L'inverse de $A=\begin{pNiceMatrix} 1&2 \\ 3&4 \end{pNiceMatrix}$ est
@@ -113,7 +113,7 @@ L'inverse de $A=\begin{pNiceMatrix} 1&2&3&4\\5&6&7&0\\1&1&1&1\\2&-3&-5&-6 \end{p
 est $A^{-1}=\MatriceInverse[n]<cell-space-limits=2pt>(1,2,3,4 § 5,6,7,0 § 1,1,1,1 § 2,-3,-5,-6)$.
 \end{ShowCodeTeX}
 
-\section*{Résolution d'un système, 2x2 ou 3x3 ou 4x4}
+\section*{Résolution d'un système, 2×2 ou 3×3 ou 4×4}
 
 \begin{ShowCodeTeX}
 La solution de $\systeme{-9x-8y=-8,3x-6y=-7}$ est $\mathcal{S}=%
@@ -158,7 +158,7 @@ La solution de $\systeme[xyzt]{x+2y+3z+4t=-10,5x+6y+7z=0,x+y+z+t=4,-2x-3y-5z-6t=
     [Matrice]$
 \end{ShowCodeTeX}
 
-\section{État stable d'une graphe probabiliste, 2x2}
+\section{État stable d'une graphe probabiliste, 2×2}
 
 \begin{ShowCodeTeX}
 L'état stable du gr. prob. de matrice

@@ -1,4 +1,4 @@
-ResolSysteme is a package to work with Linear Systems and matrix.
+ResolSysteme is a package to work with linear systems and matrix.
 ----------------------------------------------------------------------------------------
 ResolSysteme est un package pour travailler avec des systèmes linéaires et des matrices.
 ----------------------------------------------------------------------------------------
